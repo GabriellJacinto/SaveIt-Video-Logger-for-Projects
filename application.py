@@ -1,5 +1,16 @@
-from wsgiref.util import is_hop_by_hop
-import numpy as np, cv2 as cv
+from __future__ import print_function, division
+import cv2 as cv
+import numpy as np
+import threading
+import time
+import subprocess
+import os
+import tkinter as tk
+import customtkinter as ctk
+import logging
+
+from audio_capture import AudioRecorder
+from video_capture import VideoRecorder
 
 WAIT = 1000
 MARGIN_L = 10
@@ -18,64 +29,94 @@ B_THICC = -1
 
 class Application:
     def __init__(self):
-        self.__root = "toor"
-        self.__window = np.ones((512,512,3),np.uint8)
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("dark-blue")
 
-        cv.namedWindow(self.__root)
-        cv.setMouseCallback(self.__root, self.on_mouse_event)
+        self.__window = ctk.CTk()
+        self.__window.geometry("400x240")
+
+        global video_thread
+        global audio_thread
+        video_thread = VideoRecorder()
+        audio_thread = AudioRecorder()
+    
+    def button_function(self):
+        print("button pressed")
 
     def draw_window(self):
-        self.__window = cv.rectangle(self.__window, (MARGIN_L,MARGIN_U), (MARGIN_R,MARGIN_D), (0,0,255), 2)
-        
-        self.__window = cv.rectangle(self.__window, (BUTTON_L,BUTTON_U), (BUTTON_R,BUTTON_D), B_COLOR, B_THICC)
-        cv.putText(self.__window, '1: Daily log', (-100+BUTTON_C[0], BUTTON_C[1]), cv.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
-        
-        self.__window = cv.rectangle(self.__window, (BUTTON_L,BUTTON_U+BUTTON_OFFSET), (BUTTON_R,BUTTON_D+BUTTON_OFFSET), B_COLOR, B_THICC)
-        cv.putText(self.__window, '2: Project log', (-125+BUTTON_C[0], BUTTON_C[1]+BUTTON_OFFSET), cv.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
-        
-        self.__window = cv.rectangle(self.__window, (BUTTON_L,BUTTON_U+2*BUTTON_OFFSET), (BUTTON_R,BUTTON_D+2*BUTTON_OFFSET), B_COLOR, B_THICC)
-        cv.putText(self.__window, '3: Settings', (-100+BUTTON_C[0], BUTTON_C[1]+2*BUTTON_OFFSET), cv.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
-        
-        self.__window = cv.rectangle(self.__window, (BUTTON_L,BUTTON_U+3*BUTTON_OFFSET), (BUTTON_R,BUTTON_D+3*BUTTON_OFFSET), B_COLOR, B_THICC)
-        cv.putText(self.__window, 'p: Process Data', (-125+BUTTON_C[0], BUTTON_C[1]+3*BUTTON_OFFSET), cv.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
-        
-        cv.imshow(self.__root, self.__window)
+        pass
 
     def on_mouse_event(self, event, x, y, flags, param):
         pass
 
-    def daily_log_button_press(device=0):
-        pass
+    def daily_log_button_press(self):
+        self.start_AVrecording()
+        time.sleep(60)
+        self.stop_AVrecording()
+        self.file_manager()
         
-    def project_log_button_press():
+    def project_log_button_press(self):
         pass
 
-    def settings_button_press():
+    def settings_button_press(self):
         pass
     
-    def process_data_button_press():
+    def process_data_button_press(self):
         pass
 
+    def start_AVrecording(self):
+        audio_thread.start()
+        video_thread.start()
+
+    def stop_AVrecording(self,filename="test"):
+        audio_thread.stop()
+        frame_counts = video_thread.frame_counts
+        elapsed_time = time.time() - video_thread.start_time
+        recorded_fps = frame_counts / elapsed_time
+        print("total frames " + str(frame_counts))
+        print("elapsed time " + str(elapsed_time))
+        print("recorded fps " + str(recorded_fps))
+        video_thread.stop()
+
+        # Makes sure the threads have finished
+        while threading.active_count() > 1:
+            time.sleep(1)
+
+        # Merging audio and video signal
+        if abs(recorded_fps - 6) >= 0.01:    # If the fps rate was higher/lower than expected, re-encode it to the expected
+            print("Re-encoding")
+            cmd = "ffmpeg -r " + str(recorded_fps) + " -i temp_video.avi -pix_fmt yuv420p -r 6 temp_video2.avi"
+            subprocess.call(cmd, shell=True)
+            print("Muxing")
+            cmd = "ffmpeg -y -ac 2 -channel_layout stereo -i temp_audio.wav -i temp_video2.avi -pix_fmt yuv420p " + filename + ".avi"
+            subprocess.call(cmd, shell=True)
+        else:
+            print("Normal recording\nMuxing")
+            cmd = "ffmpeg -y -ac 2 -channel_layout stereo -i temp_audio.wav -i temp_video.avi -pix_fmt yuv420p " + filename + ".avi"
+            subprocess.call(cmd, shell=True)
+            print("..")
+
+    def file_manager(self):
+        "Required and wanted processing of final files"
+        local_path = os.getcwd()
+        if os.path.exists(str(local_path) + "/temp_audio.wav"):
+            os.remove(str(local_path) + "/temp_audio.wav")
+        if os.path.exists(str(local_path) + "/temp_video.avi"):
+            os.remove(str(local_path) + "/temp_video.avi")
+        if os.path.exists(str(local_path) + "/temp_video2.avi"):
+            os.remove(str(local_path) + "/temp_video2.avi")
+        # if os.path.exists(str(local_path) + "/" + filename + ".avi"):
+        #     os.remove(str(local_path) + "/" + filename + ".avi")
+
     def __call__(self):
-        while cv.getWindowProperty(self.__root, cv.WND_PROP_VISIBLE):
-            self.draw_window()
-            command = cv.waitKey(WAIT)
+        button = ctk.CTkButton(master=self.__window, text="CTkButton", command=self.button_function)
+        button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-            if command == ord('q'):
-                break
-            if command == ord('1'):
-                print("Daily Log")
-                cv.destroyAllWindows()
-                self.daily_log_button_press()
-                self.draw_window()
-            if command == ord('2'):
-                print("Project Log")
-                self.project_log_button_press()
-            if command == ord('3'):
-                print("Settings")
-                self.settings_button_press()
-            if command == ord('p'):
-                print("Data Processing")
-                self.process_data_button_press()
+        self.__window.mainloop()
 
-        cv.destroyAllWindows()
+if __name__ == '__main__':
+    app = Application()
+    app.start_AVrecording()
+    time.sleep(15)
+    app.stop_AVrecording()
+    app.file_manager()
