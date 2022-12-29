@@ -4,13 +4,13 @@ import numpy as np
 import threading
 import time
 import subprocess
-import os
 import tkinter as tk
 import customtkinter as ctk
 import logging
 
 from audio_capture import AudioRecorder
 from video_capture import VideoRecorder
+from managers import FileManager, SettingsManager
 
 WAIT = 1000
 MARGIN_L = 10
@@ -39,10 +39,10 @@ class Application:
         global audio_thread
         video_thread = VideoRecorder()
         audio_thread = AudioRecorder()
-    
-    def button_function(self):
-        print("button pressed")
 
+        self.__file_manager = FileManager()
+        self.__settings_manager = SettingsManager(self.__file_manager)
+    
     def draw_window(self):
         pass
 
@@ -50,10 +50,13 @@ class Application:
         pass
 
     def daily_log_button_press(self):
+        #show screen for choosing goals
+        #when done, show prelude for 45s
+        #iterate for each goal for 15s. 
         self.start_AVrecording()
         time.sleep(60)
         self.stop_AVrecording()
-        self.file_manager()
+        self.__file_manager.file_manager()
         
     def project_log_button_press(self):
         pass
@@ -96,20 +99,8 @@ class Application:
             subprocess.call(cmd, shell=True)
             print("..")
 
-    def file_manager(self):
-        "Required and wanted processing of final files"
-        local_path = os.getcwd()
-        if os.path.exists(str(local_path) + "/temp_audio.wav"):
-            os.remove(str(local_path) + "/temp_audio.wav")
-        if os.path.exists(str(local_path) + "/temp_video.avi"):
-            os.remove(str(local_path) + "/temp_video.avi")
-        if os.path.exists(str(local_path) + "/temp_video2.avi"):
-            os.remove(str(local_path) + "/temp_video2.avi")
-        # if os.path.exists(str(local_path) + "/" + filename + ".avi"):
-        #     os.remove(str(local_path) + "/" + filename + ".avi")
-
     def __call__(self):
-        button = ctk.CTkButton(master=self.__window, text="CTkButton", command=self.button_function)
+        button = ctk.CTkButton(master=self.__window, text="CTkButton", command=self.daily_log_button_press)
         button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         self.__window.mainloop()
