@@ -8,29 +8,16 @@ import tkinter as tk
 import customtkinter as ctk
 import logging
 
-from audio_capture import AudioRecorder
-from video_capture import VideoRecorder
-from managers import FileManager, SettingsManager
-
-WAIT = 1000
-MARGIN_L = 10
-MARGIN_U = 10
-MARGIN_R = 500
-MARGIN_D = 500
-
-BUTTON_L = MARGIN_L+20
-BUTTON_U = MARGIN_U+110
-BUTTON_R = MARGIN_R-20
-BUTTON_D = MARGIN_D-330
-BUTTON_C = ((BUTTON_L+BUTTON_R)//2,(BUTTON_D+BUTTON_U)//2)
-BUTTON_OFFSET = 70
-B_COLOR = (255,0,0)
-B_THICC = -1
+from src.audio_capture import AudioRecorder
+from src.video_capture import VideoRecorder
+from src.managers import FileManager, SettingsManager
 
 class Application:
     def __init__(self):
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("dark-blue")
+
+        self.__timer = 60
 
         self.__window = ctk.CTk()
         self.__window.geometry("400x240")
@@ -54,7 +41,7 @@ class Application:
         #when done, show prelude for 45s
         #iterate for each goal for 15s. 
         self.start_AVrecording()
-        time.sleep(60)
+        time.sleep(self.__timer)
         self.stop_AVrecording()
         self.__file_manager.file_manager()
         
@@ -86,7 +73,7 @@ class Application:
             time.sleep(1)
 
         # Merging audio and video signal
-        if abs(recorded_fps - 6) >= 0.01:    # If the fps rate was higher/lower than expected, re-encode it to the expected
+        if abs(recorded_fps - 60) >= 0.01:    # If the fps rate was higher/lower than expected, re-encode it to the expected
             print("Re-encoding")
             cmd = "ffmpeg -r " + str(recorded_fps) + " -i temp_video.avi -pix_fmt yuv420p -r 6 temp_video2.avi"
             subprocess.call(cmd, shell=True)
@@ -107,7 +94,9 @@ class Application:
 
 if __name__ == '__main__':
     app = Application()
+    file = FileManager()
+    #manager = SettingsManager(file)
     app.start_AVrecording()
-    time.sleep(15)
+    time.sleep(60)
     app.stop_AVrecording()
-    app.file_manager()
+    file.file_manager()
