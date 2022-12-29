@@ -53,14 +53,13 @@ class SettingsManager:
     @goject_buffer.setter
     def goject_buffer(self, gojects_list):
         self.__goject_buffer = gojects_list
+        self.save_gojects()
     
     def create_goject(self, name, type, status, due_date=None):
         new_goject = Goject(self.__goject_counter, name, type, status, due_date)
         self.__goject_counter += 1
         self.__goject_buffer.append(new_goject)
-
-    def save_gojects(self):
-        self.__file_manager.save_gojects(self.__goject_buffer)
+        self.save_gojects()
     
     def alter_goject(self, id, property, new_value):
         if property == "name":
@@ -72,13 +71,20 @@ class SettingsManager:
         else:
             #pop up warning
             print("Sorry, Gabe. I'm afraid you can't alter {}".format(property))
+            return
+        self.save_gojects()
 
     def delete_goject(self, id):
+        #verificar se operacao é possivel de ser feita
         del self.__goject_buffer[id]
         self.__goject_counter -= 1
         #reset the following gojects' id to not mess up the counter
         for goject in self.__goject_buffer[id:]:
-            goject.id -= 1 
+            goject.id -= 1
+        self.save_gojects()
+    
+    def save_gojects(self):
+        self.__file_manager.save_gojects(self.__goject_buffer)
 
     def confirm_operation(self, message):
         confirmation = False
@@ -88,13 +94,17 @@ class SettingsManager:
 if __name__ == '__main__':
     file = FileManager()
     manager = SettingsManager(file)
+    
     #manager.create_goject("carpeDiem", "Goal", "Backlog")
-    #manager.create_goject("carpe on them Diem", "Project", "Backlog", "2011")
+    manager.create_goject("carpe on them Diem", "Project", "Backlog", "2011")
     #manager.create_goject("Diem capado", "Goal", "In progress", "Jul 2020")
+    
     #manager.alter_goject(0,"type","Project")
     #manager.alter_goject(2,"status", "ACABOU não é hexa :'(")
     #manager.alter_goject(0,"due_date","Aug 2900")
     #manager.alter_goject(1,"name","Diem CAPADO mesmo")
-    manager.delete_goject(1)
+    
+    #manager.delete_goject(0)
+    #manager.create_goject("Diem sim", "Goal", "In progress")
+    
     manager.save_gojects()
-        
