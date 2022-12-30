@@ -12,7 +12,7 @@ class VideoRecorder():
         self.fourcc = fourcc            # capture images (with no decrease in speed over time; testing is required)
         self.frameSize = (sizex, sizey) # video formats and sizes also depend and vary according to the camera used
         self.video_filename = name
-        self.video_cap = cv2.VideoCapture(self.device_index)
+        self.video_cap = cv2.VideoCapture(self.device_index, cv2.CAP_DSHOW)
         self.video_writer = cv2.VideoWriter_fourcc(*self.fourcc)
         self.video_out = cv2.VideoWriter(self.video_filename, self.video_writer, self.fps, self.frameSize)
         self.frame_counts = 1
