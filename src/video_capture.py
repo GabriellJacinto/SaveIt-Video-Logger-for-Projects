@@ -5,7 +5,7 @@ import time
 
 class VideoRecorder():
     "Video class based on openCV"
-    def __init__(self, name="temp_video.avi", fourcc="MJPG", sizex=640, sizey=480, camindex=0, fps=30):
+    def __init__(self, name="./data/temp_video.avi", fourcc="MJPG", sizex=640, sizey=480, camindex=0, fps=30):
         self.open = True
         self.device_index = camindex
         self.fps = fps                  # fps should be the minimum constant rate at which the camera can
@@ -16,13 +16,13 @@ class VideoRecorder():
         self.video_writer = cv2.VideoWriter_fourcc(*self.fourcc)
         self.video_out = cv2.VideoWriter(self.video_filename, self.video_writer, self.fps, self.frameSize)
         self.frame_counts = 1
-        self.start_time = time.time()
 
     def record(self):
         "Video starts being recorded"
         # counter = 1
         timer_start = time.time()
         timer_current = 0
+        self.start_time = time.time()
         while self.open:
             ret, video_frame = self.video_cap.read()
             if ret:

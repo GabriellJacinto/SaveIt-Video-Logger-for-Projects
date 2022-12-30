@@ -2,7 +2,6 @@ import os, json
 from typing import List
 
 from src.goject import Goject, Topic
-
 import src.config as config
 
 class FileManager():
@@ -13,11 +12,15 @@ class FileManager():
     def load_gojects(self):
         gojects_list = []
 
-        if not os.path.exists(str(self.__local_path) + "/gojects.json"):
-            with open("gojects.json", "w") as write_file:
-                json.dump(self.__data, write_file, ensure_ascii=False, indent=2)
+        if not os.path.exists("./data/gojects.json"):
+            try:
+                os.mkdir(os.path.join(str(self.__local_path), "data"))
+            except:
+                print("Pasta já existe, criando arquivo json...")
+            with open("./data/gojects.json", "w") as write_file:
+                json.dump(self.__data, write_file, ensure_ascii=False, indent=2, )
         else:    
-            with open("gojects.json") as json_file:
+            with open("./data/gojects.json") as json_file:
                 self.__data = json.load(json_file)
 
         for goject in self.__data["gojects"]:
@@ -30,18 +33,18 @@ class FileManager():
         self.__data = {"gojects": []}
         for goject in gojects_list:
             self.__data["gojects"].append([goject.id, goject.name, goject.type, goject.status, config.TOPICS[goject.topic], goject.due_date, goject.parent])
-        with open("gojects.json", "w") as write_file:
+        with open("./data/gojects.json", "w") as write_file:
             json.dump(self.__data, write_file, ensure_ascii=False, indent=2)
 
     def file_manager(self):
         "Required and wanted processing of final files"
         
-        if os.path.exists(str(self.__local_path) + "/temp_audio.wav"):
-            os.remove(str(self.__local_path) + "/temp_audio.wav")
-        if os.path.exists(str(self.__local_path) + "/temp_video.avi"):
-            os.remove(str(self.__local_path) + "/temp_video.avi")
-        if os.path.exists(str(self.__local_path) + "/temp_video2.avi"):
-            os.remove(str(self.__local_path) + "/temp_video2.avi")
+        if os.path.exists("./data/temp_audio.wav"):
+            os.remove("./data/temp_audio.wav")
+        if os.path.exists("./data/temp_video.avi"):
+            os.remove("./data/temp_video.avi")
+        if os.path.exists("./data/temp_video2.avi"):
+            os.remove("./data/temp_video2.avi")
         # if os.path.exists(str(local_path) + "/" + filename + ".avi"):
         #     os.remove(str(local_path) + "/" + filename + ".avi")
 

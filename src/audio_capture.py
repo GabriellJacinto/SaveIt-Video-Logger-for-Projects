@@ -12,7 +12,7 @@ import time
 
 class AudioRecorder():
     "Audio class based on pyAudio and Wave"
-    def __init__(self, filename="temp_audio.wav", rate=44100, fpb=2**12, channels=1, audio_index=0):
+    def __init__(self, filename="./data/temp_audio.wav", rate=44100, fpb=2**12, channels=1, audio_index=0):
         self.open = True
         self.rate = rate
         self.frames_per_buffer = fpb
