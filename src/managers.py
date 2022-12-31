@@ -1,8 +1,8 @@
 import os, json
 from typing import List
 
-from src.goject import Goject, Topic
-import src.config as config
+from src.goject import Goject
+from src.config import *
 
 class FileManager():
     def __init__(self):
@@ -16,7 +16,7 @@ class FileManager():
             try:
                 os.mkdir(os.path.join(str(self.__local_path), "data"))
             except:
-                print("Pasta já existe, criando arquivo json...")
+                print("Pasta de dados já existe, criando arquivo gojects.json...")
             with open("./data/gojects.json", "w") as write_file:
                 json.dump(self.__data, write_file, ensure_ascii=False, indent=2, )
         else:    
@@ -32,19 +32,32 @@ class FileManager():
     def save_gojects(self, gojects_list: List[Goject]):
         self.__data = {"gojects": []}
         for goject in gojects_list:
-            self.__data["gojects"].append([goject.id, goject.name, goject.type, goject.status, config.TOPICS[goject.topic], goject.due_date, goject.parent])
+            self.__data["gojects"].append([goject.id, goject.name, goject.type, goject.status, TOPICS[goject.topic], goject.due_date, goject.parent])
         with open("./data/gojects.json", "w") as write_file:
             json.dump(self.__data, write_file, ensure_ascii=False, indent=2)
 
-    def file_manager(self):
+    def file_manager(self, dir_record="Gojects", dir_goject_name="videos"):
+        save_dir = "./data/{}/{}/".format(dir_record, dir_goject_name)
+        if not os.path.exists(save_dir):
+            print("Não exite caminho para salvar. Criando...")
+            try:
+                os.mkdir(os.path.join(str(self.__local_path), "data", dir_record))
+            except:
+                print("Pasta do {} já existente, criando a {}...".format(dir_record, dir_goject_name))
+            os.mkdir(save_dir)
+        else:
+            print("Pasta existe. Salvando em diretório já existente")
+        return save_dir
+
+    def file_cleaner(self, save_dir):
         "Required and wanted processing of final files"
-        
-        if os.path.exists("./data/temp_audio.wav"):
-            os.remove("./data/temp_audio.wav")
-        if os.path.exists("./data/temp_video.avi"):
-            os.remove("./data/temp_video.avi")
-        if os.path.exists("./data/temp_video2.avi"):
-            os.remove("./data/temp_video2.avi")
+
+        if os.path.exists(save_dir + "temp_audio.wav"):
+            os.remove(save_dir + "temp_audio.wav")
+        if os.path.exists(save_dir + "temp_video.avi"):
+            os.remove(save_dir + "temp_video.avi")
+        if os.path.exists(save_dir + "temp_video2.avi"):
+            os.remove(save_dir + "temp_video2.avi")
         # if os.path.exists(str(local_path) + "/" + filename + ".avi"):
         #     os.remove(str(local_path) + "/" + filename + ".avi")
 
@@ -63,7 +76,7 @@ class SettingsManager:
         self.__goject_buffer = gojects_list
         self.save_gojects()
     
-    def create_goject(self, name, type, status, topic:Topic, due_date=None, parent=None):
+    def create_goject(self, name, type, status, topic, due_date=None, parent=None):
         new_goject = Goject(self.__goject_counter, name, type, status, topic, due_date, parent)
         self.__goject_counter += 1
         self.__goject_buffer.append(new_goject)
@@ -131,4 +144,4 @@ if __name__ == '__main__':
     manager.create_goject("3 Sci-fi Books", "Goal", "Backlog", Topic.WRITING)
     manager.create_goject("Graphic Novel", "Goal", "Backlog", Topic.PHOTOGRAPHY_DESIGN)
     manager.create_goject("Game", "Goal", "Backlog", Topic.PROGRAMMING)
-    manager.create_goject("Art House", "Goal", "Backlog", Topic.PHOTOGRAPHY_DESIGN) 
+    manager.create_goject("Art House", "Goal", "Backlog", Topic.PHOTOGRAPHY_DESIGN)

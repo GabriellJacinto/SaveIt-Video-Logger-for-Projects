@@ -6,32 +6,40 @@ import time
 class VideoRecorder():
     "Video class based on openCV"
     def __init__(self, name="./data/temp_video.avi", fourcc="MJPG", sizex=640, sizey=480, camindex=0, fps=30):
-        self.open = True
-        self.device_index = camindex
-        self.fps = fps                  # fps should be the minimum constant rate at which the camera can
-        self.fourcc = fourcc            # capture images (with no decrease in speed over time; testing is required)
-        self.frameSize = (sizex, sizey) # video formats and sizes also depend and vary according to the camera used
-        self.video_filename = name
-        self.video_cap = cv2.VideoCapture(self.device_index, cv2.CAP_DSHOW)
-        self.video_writer = cv2.VideoWriter_fourcc(*self.fourcc)
-        self.video_out = cv2.VideoWriter(self.video_filename, self.video_writer, self.fps, self.frameSize)
+        self.__open = True
+        self.__device_index = camindex
+        self.__fps = fps                  # fps should be the minimum constant rate at which the camera can
+        self.__fourcc = fourcc            # capture images (with no decrease in speed over time; testing is required)
+        self.__frameSize = (sizex, sizey) # video formats and sizes also depend and vary according to the camera used
+        self.__video_filename = name
+        self.__video_cap = cv2.VideoCapture(self.__device_index, cv2.CAP_DSHOW)
+        self.__video_writer = cv2.VideoWriter_fourcc(*self.__fourcc)
         self.frame_counts = 1
+
+    @property
+    def video_filename(self):
+        return self.__video_filename
+    
+    @video_filename.setter
+    def video_filename(self, name):
+        self.__video_filename = name
 
     def record(self):
         "Video starts being recorded"
         # counter = 1
+        self.__video_out = cv2.VideoWriter(self.__video_filename, self.__video_writer, self.__fps, self.__frameSize)
         timer_start = time.time()
         timer_current = 0
         self.start_time = time.time()
-        while self.open:
-            ret, video_frame = self.video_cap.read()
+        while self.__open:
+            ret, video_frame = self.__video_cap.read()
             if ret:
-                self.video_out.write(video_frame)
+                self.__video_out.write(video_frame)
                 # print(str(counter) + " " + str(self.frame_counts) + " frames written " + str(timer_current))
                 self.frame_counts += 1
                 # counter += 1
                 # timer_current = time.time() - timer_start
-                time.sleep(1/self.fps)
+                time.sleep(1/self.__fps)
                 gray = cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY)
                 cv2.imshow('recording...', gray)
                 cv2.waitKey(1)
@@ -40,11 +48,18 @@ class VideoRecorder():
 
     def stop(self):
         "Finishes the video recording therefore the thread too"
-        if self.open:
-            self.open=False
-            self.video_out.release()
-            self.video_cap.release()
+        print("Video done recording.", self.__open)
+        if self.__open:
+            print("1")
+            self.__open=False
+            print("2")
+            self.__video_out.release()
+            print("3")
+            self.__video_cap.release()
+            print("4")
             cv2.destroyAllWindows()
+            cv2.waitKey(1)
+            print("Processing...")
 
     def start(self):
         "Launches the video recording function using a thread"
