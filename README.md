@@ -1,12 +1,18 @@
-![GitHub repo size](https://img.shields.io/github/repo-size/iuricode/README-template?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/iuricode/README-template?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/iuricode/README-template?style=for-the-badge)
-![Bitbucket open issues](https://img.shields.io/bitbucket/issues/iuricode/README-template?style=for-the-badge)
-![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/iuricode/README-template?style=for-the-badge)
-
 # SaveIt: Personal Video Logger
 
-> Automation for video logging progress and reflexions about goals, projects, and research (Gojects). Kinda like the characters on the first avatar movie. Notion integration WIP.
+<div align="center">
+
+![PyPI](https://img.shields.io/pypi/v/customtkinter)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
+![Downloads](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=downloads)
+![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
+![](https://tokei.rs/b1/github/tomschimansky/customtkinter)
+
+</div>
+
+---
+
+Automation for video logging progress and reflexions about goals, projects, and research (Gojects). Kinda like the characters on the first avatar movie. Notion integration WIP.
 
 <img src="./utils/example.JPG" alt="Main Menu">
 
