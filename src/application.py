@@ -14,6 +14,7 @@ from src.config import *
 from src.audio_capture import AudioRecorder
 from src.video_capture import VideoRecorder
 from src.goject import Goject
+from src.widgets import Spinbox, GojectCheckbox, GojectSwitch, ScrollableFrame
 from src.managers import FileManager, SettingsManager
 
 ctk.set_appearance_mode("dark")
@@ -27,14 +28,6 @@ class Application(ctk.CTk):
 
         self.__quick_log_timer = 15
         self.__long_log_timer = 60
-
-    def long_log_optionmenu_select(self, value):
-        num, _ = value.split()
-        self.__long_log_timer = int(num)
-        
-    def quick_log_optionmenu_select(self, value):
-        num, _ = value.split()
-        self.__quick_log_timer = int(num)
 
     def draw_window(self):
         self.title("SaveIt: Personal Video Logger")
@@ -58,22 +51,13 @@ class Application(ctk.CTk):
         self.seg_button_1.grid(row=0, column=2, padx=(20, 10), pady=(10, 10), sticky="ew")
         self.seg_button_1.set("Goals")
 
-        # create scrollable textbox
-        #tk_textbox = tk.Text(self.right_sidebar_frame, highlightthickness=0)
-        #tk_textbox.grid(row=1, column=2, sticky="nsew")
-
-        # create CTk scrollbar
-        ctk_textbox_scrollbar = ctk.CTkScrollbar(self.right_sidebar_frame) #, command=tk_textbox.yview)
-        ctk_textbox_scrollbar.grid(row=1, column=3, sticky="ns")
-
-        # connect textbox scroll event to CTk scrollbar
-        #tk_textbox.configure(yscrollcommand=ctk_textbox_scrollbar.set)
-
-        self.checkbox_1 = ctk.CTkCheckBox(master=self.right_sidebar_frame, text="Objetivo X")
-        self.checkbox_1.grid(row=1, column=2, pady=(20, 10), padx=20, sticky="n")
-
-        self.status_label = ctk.CTkLabel(self.right_sidebar_frame, text="Status")
-        self.status_label.grid(row=1, column=2, padx=20, pady=(10, 0))
+        # create scrollable frame
+        self.scrollable_frame = ScrollableFrame(self.right_sidebar_frame)
+        self.scrollable_frame.grid(row=1, column=2, padx=(20, 10), pady=(10, 10))
+            
+        for i in range(15):
+            self.checkbox_1 = ctk.CTkCheckBox(master=self.scrollable_frame.scrollable_canvas, text="Objetivo X").pack()
+            self.status_label = ctk.CTkLabel(self.scrollable_frame.scrollable_canvas, text="Status").pack()
         
     def draw_center_image(self):
         self.center_frame = ctk.CTkFrame(self, width=140, corner_radius=0,fg_color="transparent")
@@ -114,18 +98,22 @@ class Application(ctk.CTk):
         #Process Data Button
         self.process_data_button = ctk.CTkButton(self.left_sidebar_frame, command=self.process_data_button_press, text="Process Data")
         self.process_data_button.grid(row=4, column=0, padx=20, pady=10)
-        #Quick Log Duration Option
+        #Quick Log Duration Spinbox
+
         self.quick_log_label = ctk.CTkLabel(self.left_sidebar_frame, text="Quick Log Duration", anchor="w")
         self.quick_log_label.grid(row=6, column=0, padx=20, pady=(10, 0))
-        self.quick_log_optionemenu = ctk.CTkOptionMenu(self.left_sidebar_frame, values=["15 s", "25 s", "30 s"],
-                                                                       command=self.quick_log_optionmenu_select)
-        self.quick_log_optionemenu.grid(row=7, column=0, padx=20, pady=(10, 10))
-        #Quick Log Duration Option
+
+        self.quick_log_spinbox = Spinbox(self.left_sidebar_frame, width=120)
+        self.quick_log_spinbox.grid(row=7, column=0, padx=20, pady=(10, 10))
+        self.quick_log_spinbox.set(self.__quick_log_timer)
+
+        #Long Log Duration Spinbox
         self.long_log_label = ctk.CTkLabel(self.left_sidebar_frame, text="Long Log Duration", anchor="w")
         self.long_log_label.grid(row=8, column=0, padx=20, pady=(10, 0))
-        self.long_log_optionemenu = ctk.CTkOptionMenu(self.left_sidebar_frame, values=["1 min", "2 min", "3 min"],
-                                                                       command=self.long_log_optionmenu_select)
-        self.long_log_optionemenu.grid(row=9, column=0, padx=20, pady=(10, 10))
+
+        self.long_log_spinbox = Spinbox(self.left_sidebar_frame, step_size=0.25, width=120)
+        self.long_log_spinbox.grid(row=9, column=0, padx=20, pady=(10, 10))
+        self.long_log_spinbox.set(self.__long_log_timer)
         
     def create_progress_bar_block(self, goject: Goject):
         pass
@@ -137,7 +125,7 @@ class Application(ctk.CTk):
         self.select_gojects()
         #when done, show prelude for 45s
         #iterate for each goal for 15s. Once done, change the box status to blocked
-        self.record_and_save(self.__quick_log_timer, "Quick_Logs")
+        self.record_and_save(self.quick_log_spinbox.get(), "Quick_Logs")
         #clear the right_sidebar
         
     def long_log_button_press(self):
@@ -145,7 +133,7 @@ class Application(ctk.CTk):
         #TO DO: when done, show prelude for 15s
         #create project bar
         #iterate for each project for 1min. 
-        self.record_and_save(self.__long_log_timer, "Long_Logs")
+        self.record_and_save(self.long_log_spinbox.get(), "Long_Logs")
 
     def settings_gojects_button_press(self):
         pass
