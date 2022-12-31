@@ -66,16 +66,39 @@ class SettingsManager:
         self.__file_manager = file_manager
         self.__goject_buffer = file_manager.load_gojects()
         self.__goject_counter = len(self.__goject_buffer)
+        self.__number_goals = 0
+        self.__number_projects = 0
+
+        for goject in self.__goject_buffer:
+            if goject.type == "Goal":
+                self.__number_goals += 1
+            elif goject.type == "Project":
+                self.__number_projects += 1
+            else:
+                print("{} has wrong type name, please edit".format(goject.name))
+        self.show_count_status()
 
     @property
     def goject_buffer(self):
         return self.__goject_buffer
+    
+    @property
+    def number_goals(self):
+        return self.__number_goals
+
+    @property
+    def number_projects(self):
+        return self.__number_projects
+
+    @property
+    def goject_counter(self):
+        return self.__goject_counter
 
     @goject_buffer.setter
     def goject_buffer(self, gojects_list):
         self.__goject_buffer = gojects_list
         self.save_gojects()
-    
+
     def create_goject(self, name, type, status, topic, due_date=None, parent=None):
         new_goject = Goject(self.__goject_counter, name, type, status, topic, due_date, parent)
         self.__goject_counter += 1
@@ -109,7 +132,11 @@ class SettingsManager:
         self.save_gojects()
     
     def save_gojects(self):
+        self.show_count_status()
         self.__file_manager.save_gojects(self.__goject_buffer)
+
+    def show_count_status(self):
+        print("{} Gojects loaded: {} Goals and {} Projects".format(self.__goject_counter, self.__number_goals, self.__number_projects))
 
     def confirm_operation(self, message):
         confirmation = False

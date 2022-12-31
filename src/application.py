@@ -43,22 +43,17 @@ class Application(ctk.CTk):
         self.draw_center_image()
 
     def draw_right_frame(self):
-        self.right_sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
-        self.right_sidebar_frame.grid(row=0, column=2, rowspan=4, sticky="nsew")
+        self.right_sidebar_frame = ctk.CTkFrame(self, width=RIGHT_FRAME_WIDTH, corner_radius=0)
+        self.right_sidebar_frame.grid(row=0, column=2, rowspan=4, sticky = "nsew")
         self.right_sidebar_frame.grid_rowconfigure(5, weight=1)
 
-        self.seg_button_1 = ctk.CTkSegmentedButton(self.right_sidebar_frame,values=["Goals", "Projects"])
-        self.seg_button_1.grid(row=0, column=2, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.seg_button_1.set("Goals")
-
         # create scrollable frame
-        self.scrollable_frame = ScrollableFrame(self.right_sidebar_frame)
+        self.scrollable_frame = ScrollableFrame(self.right_sidebar_frame, width=RIGHT_FRAME_WIDTH)
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 10), pady=(10, 10))
             
-        for i in range(15):
-            self.checkbox_1 = ctk.CTkCheckBox(master=self.scrollable_frame.scrollable_canvas, text="Objetivo X").pack()
-            self.status_label = ctk.CTkLabel(self.scrollable_frame.scrollable_canvas, text="Status").pack()
-        
+        for i in range(self.__settings_manager.goject_counter):
+            GojectCheckbox(master=self.scrollable_frame.scrollable_canvas, name=self.__settings_manager.goject_buffer[i].name, status=self.__settings_manager.goject_buffer[i].status, type=self.__settings_manager.goject_buffer[i].type)
+            
     def draw_center_image(self):
         self.center_frame = ctk.CTkFrame(self, width=140, corner_radius=0,fg_color="transparent")
         self.center_frame.grid(row=0, column=1, rowspan=4)
@@ -114,7 +109,10 @@ class Application(ctk.CTk):
         self.long_log_spinbox = Spinbox(self.left_sidebar_frame, step_size=0.25, width=120)
         self.long_log_spinbox.grid(row=9, column=0, padx=20, pady=(10, 10))
         self.long_log_spinbox.set(self.__long_log_timer)
-        
+    
+    def draw_gojects_selection_window(self):
+        pass
+
     def create_progress_bar_block(self, goject: Goject):
         pass
 

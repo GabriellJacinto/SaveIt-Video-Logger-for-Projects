@@ -2,7 +2,13 @@ from src.goject import Topic
 
 HEIGHT = 620
 WIDTH = 1200
+RIGHT_FRAME_WIDTH = 300
 
+COLORS = {
+    "Backlog": "blue",
+    "In Progress": "orange",
+    "Completed": "green"
+} 
 
 TOPICS = {
     Topic.BOOKS: "BOOKS",

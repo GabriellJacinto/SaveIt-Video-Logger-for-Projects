@@ -49,12 +49,12 @@ This software is currently a work in progress. The current version is capable of
   - [x] Save Gojects
   - [ ] Select Gojects to record
     - [ ] Create custom widget to aggragate information of recording progress
-    - [ ] Show custom widgets on the right sidebar
+    - [x] Show custom widgets on the right sidebar
 - [x] Recording:
   - [x] Quick Log Recording (less than one minute)
-    - [ ] Custom widget to set timer duration as a dial
+    - [x] Custom widget to set timer duration as a dial
   - [x] Long Log Recording (more than one minute)
-    - [ ] Custom widget to set timer duration as a dial
+    - [x] Custom widget to set timer duration as a dial
   - [x] Folder manager 
 
 </details>
