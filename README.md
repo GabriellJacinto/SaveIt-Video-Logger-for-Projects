@@ -86,5 +86,5 @@ This software is currently a work in progress. The current version is capable of
 
 See [License](LICENSE) for more information.
 
-[⬆ Back to the top](#InProgress:-Personal-Video-Logger)<br>
+[⬆ Back to the top](#SaveIt:-Personal-Video-Logger)<br>
 
