@@ -12,7 +12,6 @@
 
 Automation for video logging progress and reflexions about goals, projects, and research (Gojects). Kinda like the characters on the first avatar movie. Notion integration WIP.
 
----
 
 <img src="./utils/example.JPG" alt="Main Menu">
 
@@ -60,7 +59,7 @@ This software is currently a work in progress. The current version is capable of
 
 </details>
 
-<details open>
+<details>
 <summary>Version 1.2 Features</summary>
 
 - [ ] Execution by executable
