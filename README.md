@@ -33,7 +33,8 @@ python3 main.py
 
 This software is currently a work in progress. The current version is capable of:
 
-### Version 1.1 Features
+<details open>
+<summary>Version 1.1 Features</summary>
 
 - [x] Execution by command line (see [Installation](#🚀-Installing-SaveIt:-Personal-Video-Logger))
 - [ ] Manage Goals and Projects:
@@ -51,7 +52,11 @@ This software is currently a work in progress. The current version is capable of
     - [ ] Custom widget to set timer duration as a dial
   - [x] Folder manager 
 
-### Version 1.2 Features
+</details>
+
+<details open>
+<summary>Version 1.2 Features</summary>
+
 - [ ] Execution by executable
 - [ ] Recording:
   - [ ] Show recording on the main menu (currently opens up another window)
@@ -71,8 +76,12 @@ This software is currently a work in progress. The current version is capable of
     - [ ] Compress Logs Compilation
     - [ ] Clean Logs Older Than 6 months
     - [ ] Generate Report with overall sentiment and summary of reflexions
+</details>
 
-### Version 1.3 Features
+
+<details>
+<summary>Version 1.3 Features</summary>
+
 - [ ] Video Player:
   - [ ] Create class to play recording on the main menu:
     - [ ] Select and play older logs
@@ -81,6 +90,7 @@ This software is currently a work in progress. The current version is capable of
   - [ ] Import
   - [ ] Edit and Save
 
+</details>
 
 ## 📝 License
 
