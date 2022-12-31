@@ -37,7 +37,7 @@ class Application(ctk.CTk):
         self.__quick_log_timer = int(num)
 
     def draw_window(self):
-        self.title("InProgress: Personal Video Logger")
+        self.title("SaveIt: Personal Video Logger")
         self.geometry(f"{WIDTH}x{HEIGHT}")
 
         # configure grid layout (4x4)

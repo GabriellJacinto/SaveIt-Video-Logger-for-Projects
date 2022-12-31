@@ -1,22 +1,41 @@
-# InProgress: Personal Video Logger
-
 ![GitHub repo size](https://img.shields.io/github/repo-size/iuricode/README-template?style=for-the-badge)
 ![GitHub language count](https://img.shields.io/github/languages/count/iuricode/README-template?style=for-the-badge)
 ![GitHub forks](https://img.shields.io/github/forks/iuricode/README-template?style=for-the-badge)
 ![Bitbucket open issues](https://img.shields.io/bitbucket/issues/iuricode/README-template?style=for-the-badge)
 ![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/iuricode/README-template?style=for-the-badge)
 
+# SaveIt: Personal Video Logger
+
+> Automation for video logging progress and reflexions about goals, projects, and research (Gojects). Kinda like the characters on the first avatar movie. Notion integration WIP.
+
 <img src="./utils/example.JPG" alt="Main Menu">
 
-> Automantion for video logging progress and reflexions about goals, projects, and research (Gojects). Kinda like the characters on the first avatar movie. Notion integration WIP.
+## 💻 Requirements
 
+Before downloading, certify that you have the following requirements:
+* You have the most recent version of `python`
+* Your operating system is `Windows / Linux` based.
+
+## 🚀 Installing SaveIt: Personal Video Logger
+
+To run SaveIt: Personal Video Logger, run the following commands:
+
+```
+pip install requirements.txt
+```
+
+Lauching the application:
+
+```
+python3 main.py
+```
 ## Current Version: 1.0 
 
 This software is currently a work in progress. The current version is capable of:
 
 ### Version 1.1 Features
 
-- [x] Execution by command line (see [Execution](#🚀-Installing-InProgress:-Personal-Video-Logger))
+- [x] Execution by command line (see [Installation](#🚀-Installing-SaveIt:-Personal-Video-Logger))
 - [ ] Manage Goals and Projects:
   - [x] Create Gojects
   - [x] Delete Gojects
@@ -62,29 +81,10 @@ This software is currently a work in progress. The current version is capable of
   - [ ] Import
   - [ ] Edit and Save
 
-## 💻 Requirements
-
-Before downloading, certify that you have the following requirements:
-* You have the most recent version of `python`
-* Your operating system is `Windows / Linux` based.
-
-## 🚀 Installing InProgress: Personal Video Logger
-
-To run InProgress: Personal Video Logger, run the following commands:
-
-```
-pip install requirements.txt
-```
-
-Lauching the application:
-
-```
-python3 main.py
-```
 
 ## 📝 License
 
-See [LICENÇA](LICENSE) for more information.
+See [License](LICENSE) for more information.
 
 [⬆ Back to the top](#InProgress:-Personal-Video-Logger)<br>
 
