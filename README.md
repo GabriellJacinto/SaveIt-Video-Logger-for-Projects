@@ -10,9 +10,9 @@
 
 </div>
 
----
-
 Automation for video logging progress and reflexions about goals, projects, and research (Gojects). Kinda like the characters on the first avatar movie. Notion integration WIP.
+
+---
 
 <img src="./utils/example.JPG" alt="Main Menu">
 
