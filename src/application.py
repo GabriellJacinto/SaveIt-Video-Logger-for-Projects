@@ -37,7 +37,7 @@ class Application(ctk.CTk):
         self.__quick_log_timer = int(num)
 
     def draw_window(self):
-        self.title("Personal Video Logger")
+        self.title("InProgress: Personal Video Logger")
         self.geometry(f"{WIDTH}x{HEIGHT}")
 
         # configure grid layout (4x4)
@@ -80,7 +80,7 @@ class Application(ctk.CTk):
         self.center_frame.grid(row=0, column=1, rowspan=4)
         self.center_frame.grid_rowconfigure(5, weight=1)
         # Load an image using OpenCV
-        self.cv_img = cv.cvtColor(cv.imread("./data/bg.jpg"), cv.COLOR_BGR2RGB)
+        self.cv_img = cv.cvtColor(cv.imread("./utils/bg.jpg"), cv.COLOR_BGR2RGB)
         # Get the image dimensions (OpenCV stores image data as NumPy ndarray)
         self.height, self.width, no_channels = self.cv_img.shape
         # Create a canvas that can fit the above image
@@ -91,7 +91,7 @@ class Application(ctk.CTk):
         # Add a PhotoImage to the Canvas
         #self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
         # Button that lets the user blur the image
-        self.btn_blur=ctk.CTkButton(self.center_frame, command=lambda:print("works bro"), text="Does Nothing Button")
+        self.btn_blur=ctk.CTkButton(self.center_frame, command=lambda:print("works bro"), text="Record")
         self.btn_blur.grid(row=1, padx=20, pady=10)
         
     def draw_left_frame(self):
