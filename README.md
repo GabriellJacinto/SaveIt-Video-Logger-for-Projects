@@ -7,7 +7,7 @@
 ![Downloads](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=downloads)
 ![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
 ![](https://tokei.rs/b1/github/tomschimansky/customtkinter)
-
+![Mozilla Add-on](https://img.shields.io/amo/dw/teste)
 </div>
 
 Automation for video logging progress and reflexions about goals, projects, and research (Gojects). Kinda like the characters on the first avatar movie. Notion integration WIP.
