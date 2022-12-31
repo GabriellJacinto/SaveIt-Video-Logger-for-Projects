@@ -7,6 +7,7 @@ import time
 import subprocess
 import tkinter as tk
 import customtkinter as ctk
+import PIL.Image, PIL.ImageTk
 import logging
 
 from src.config import *
@@ -75,7 +76,23 @@ class Application(ctk.CTk):
         self.status_label.grid(row=1, column=2, padx=20, pady=(10, 0))
         
     def draw_center_image(self):
-        pass
+        self.center_frame = ctk.CTkFrame(self, width=140, corner_radius=0,fg_color="transparent")
+        self.center_frame.grid(row=0, column=1, rowspan=4)
+        self.center_frame.grid_rowconfigure(5, weight=1)
+        # Load an image using OpenCV
+        self.cv_img = cv.cvtColor(cv.imread("./data/bg.jpg"), cv.COLOR_BGR2RGB)
+        # Get the image dimensions (OpenCV stores image data as NumPy ndarray)
+        self.height, self.width, no_channels = self.cv_img.shape
+        # Create a canvas that can fit the above image
+        self.canvas = tk.Canvas(self.center_frame, width = self.width, height = self.height, bd=0, highlightthickness=0, relief='ridge', bg="black")
+        self.canvas.grid(row=0, column=0)
+        # Use PIL (Pillow) to convert the NumPy ndarray to a PhotoImage
+        self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.cv_img))
+        # Add a PhotoImage to the Canvas
+        #self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
+        # Button that lets the user blur the image
+        self.btn_blur=ctk.CTkButton(self.center_frame, command=lambda:print("works bro"), text="Does Nothing Button")
+        self.btn_blur.grid(row=1, padx=20, pady=10)
         
     def draw_left_frame(self):
         self.left_sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
@@ -120,15 +137,15 @@ class Application(ctk.CTk):
         self.select_gojects()
         #when done, show prelude for 45s
         #iterate for each goal for 15s. Once done, change the box status to blocked
-        self.record_and_save(self.__quick_log_timer)
+        self.record_and_save(self.__quick_log_timer, "Quick_Logs")
         #clear the right_sidebar
         
     def long_log_button_press(self):
         self.select_gojects()
-        #when done, show prelude for 15s
+        #TO DO: when done, show prelude for 15s
         #create project bar
         #iterate for each project for 1min. 
-        self.record_and_save(self.__long_log_timer)
+        self.record_and_save(self.__long_log_timer, "Long_Logs")
 
     def settings_gojects_button_press(self):
         pass

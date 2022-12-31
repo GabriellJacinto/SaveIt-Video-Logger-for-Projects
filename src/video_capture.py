@@ -2,6 +2,7 @@ from __future__ import print_function, division
 import cv2
 import threading
 import time
+import tkinter as tk
 
 class VideoRecorder():
     "Video class based on openCV"
