@@ -6,7 +6,7 @@ from src.config import COLORS
 
 
 class ScrollableFrame(customtkinter.CTkFrame):
-    def __init__(self, *args, width=200, height=720, **kwargs):
+    def __init__(self, *args, width=200, height=650, **kwargs):
         super().__init__(*args, **kwargs)
         canvas = tk.Canvas(self,width = width, height = height, bd=0, highlightthickness=0, relief='ridge', bg='gray13')
         scrollbar = customtkinter.CTkScrollbar(self, orientation="vertical", command=canvas.yview)
@@ -21,33 +21,26 @@ class ScrollableFrame(customtkinter.CTkFrame):
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-
-class GojectSwitch(customtkinter.CTkFrame):
-    def __init__(self, *args, width: int = 100, height: int = 32, command: Callable = None, **kwargs):
-        super().__init__(*args, width=width, height=height, **kwargs)
-
-
 class GojectCheckbox(customtkinter.CTkFrame):
-    def __init__(self, *args, master, name: str, status: str, type:str, width: int = 100, height: int = 32, command: Callable = None, **kwargs):
+    def __init__(self, *args, master, name: str = "Example", status: str = "Backlog", type:str = "Goal", width: int = 100, height: int = 32, command: Callable = None, **kwargs):
         super().__init__(*args, master=master, width=width, height=height, **kwargs)
-        
-        self.checkbox = customtkinter.CTkCheckBox(master, text="{}".format(name), checkbox_height=18, checkbox_width=18, font = customtkinter.CTkFont(weight="bold"), border_width=2, state=tk.DISABLED)
-        self.checkbox.pack(anchor=tk.W)        
-        
         self.type = type
-        self.seg_button = customtkinter.CTkSegmentedButton(master,values=["Goal", "Project"], command = self.reset_selection)
-        self.seg_button.pack(anchor=tk.CENTER)
-        self.seg_button.set(self.type)
 
-        self.status_label = customtkinter.CTkLabel(master, text="Status: {}".format(status), font = customtkinter.CTkFont(size = 10, slant="italic"), text_color=COLORS[status])
-        self.status_label.pack(anchor=tk.CENTER)
-        
+        self.checkbox = customtkinter.CTkCheckBox(master, text="{}".format(name), checkbox_height=18, checkbox_width=18, font = customtkinter.CTkFont(weight="bold"), border_width=2, state=tk.DISABLED)
+        self.seg_button = customtkinter.CTkSegmentedButton(master,values=["Goal", "Project"], command = self.reset_selection)
+        self.status_label = customtkinter.CTkLabel(master, text="Status: {}".format(status), font = customtkinter.CTkFont(size = 10, slant="italic"), text_color=COLORS[status])        
         self.progressbar = customtkinter.CTkProgressBar(master, progress_color = "green")
-        self.progressbar.set(0)
-        self.progressbar.pack(anchor=tk.CENTER)
-        
         self.blank_label = customtkinter.CTkLabel(master, text=" ")
+
+        self.seg_button.set(self.type)
+        self.progressbar.set(0)
+
+        self.checkbox.pack(anchor=tk.W)   
+        self.seg_button.pack(anchor=tk.CENTER)
+        self.status_label.pack(anchor=tk.CENTER)
+        self.progressbar.pack(anchor=tk.CENTER)
         self.blank_label.pack(anchor=tk.W)
+
 
     def set_checkbox_value(self):
         self.checkbox.select()
@@ -57,7 +50,8 @@ class GojectCheckbox(customtkinter.CTkFrame):
     
     def reset_selection(self, _):
         self.seg_button.set(self.type)
-    
+
+
 class Spinbox(customtkinter.CTkFrame):
     def __init__(self, *args, width: int = 100, height: int = 32, step_size: Union[int, float] = 1, command: Callable = None, **kwargs):
         super().__init__(*args, width=width, height=height, **kwargs)

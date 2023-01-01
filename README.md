@@ -34,21 +34,22 @@ Lauching the application:
 ```
 python3 main.py
 ```
-## Current Version: 1.0 
+## Current Version: 1.0.0
 
 This software is currently a work in progress. The current version is capable of:
 
 <details open>
-<summary>Version 1.1 Features</summary>
+<summary>Version 1.1.0 Features</summary>
 
 - [x] Execution by command line (see [Installation](#🚀-Installing-SaveIt:-Personal-Video-Logger))
 - [ ] Manage Goals and Projects:
-  - [x] Create Gojects
-  - [x] Delete Gojects
-  - [x] Edit Gojects
-  - [x] Save Gojects
+  - [ ] Edit Gojects Window
+    - [x] Create Gojects
+    - [x] Delete Gojects
+    - [x] Edit Gojects
+    - [x] Save Gojects
   - [ ] Select Gojects to record
-    - [ ] Create custom widget to aggragate information of recording progress
+    - [x] Create custom widget to aggragate information of recording progress
     - [x] Show custom widgets on the right sidebar
 - [x] Recording:
   - [x] Quick Log Recording (less than one minute)
@@ -60,7 +61,7 @@ This software is currently a work in progress. The current version is capable of
 </details>
 
 <details>
-<summary>Version 1.2 Features</summary>
+<summary>Version 1.2.0 Features</summary>
 
 - [ ] Execution by executable
 - [ ] Recording:
@@ -69,14 +70,14 @@ This software is currently a work in progress. The current version is capable of
     - [ ] Create button to stop current log and go to next one
     - [ ] Create button to go to next section of current log
     - [ ] Create button to stop recording
-  - [ ] Create sections for each log (not restricted to):
+  - [ ] Create sections for each log during recording (not restricted to):
     - [ ] Introduction
     - [ ] Reflexion
     - [ ] Conclusion
 - [ ] Log Data Processing
   - [ ] Audio Transcription
   - [ ] Computer Vision Sentiment Analysis
-  - [ ] Log Manager:
+  - [ ] Log Manager Window:
     - [ ] Compile Logs
     - [ ] Compress Logs Compilation
     - [ ] Clean Logs Older Than 6 months
@@ -85,7 +86,7 @@ This software is currently a work in progress. The current version is capable of
 
 
 <details>
-<summary>Version 1.3 Features</summary>
+<summary>Version 1.3.0 Features</summary>
 
 - [ ] Video Player:
   - [ ] Create class to play recording on the main menu:

@@ -14,11 +14,12 @@ from src.config import *
 from src.audio_capture import AudioRecorder
 from src.video_capture import VideoRecorder
 from src.goject import Goject
-from src.widgets import Spinbox, GojectCheckbox, GojectSwitch, ScrollableFrame
+from src.widgets import Spinbox, GojectCheckbox, ScrollableFrame
+from src.toplevelwindows import GojectEditWindow, GojectSelectWindow, ProcessDataWindow
 from src.managers import FileManager, SettingsManager
 
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("dark-blue")
+ctk.set_appearance_mode(APP_COLOR_THEME)
+ctk.set_default_color_theme(APP_WIDGETS_COLORS)
 
 class Application(ctk.CTk):
     def __init__(self):
@@ -26,12 +27,12 @@ class Application(ctk.CTk):
         self.__file_manager = FileManager()
         self.__settings_manager = SettingsManager(self.__file_manager)
 
-        self.__quick_log_timer = 15
-        self.__long_log_timer = 60
+        self.__quick_log_timer = DEFAULT_QUICKLOG_TIME
+        self.__long_log_timer = DEFAULT_LONGLOG_TIME
 
     def draw_window(self):
-        self.title("SaveIt: Personal Video Logger")
-        self.geometry(f"{WIDTH}x{HEIGHT}")
+        self.title(MAIN_WINDOW_NAME)
+        self.geometry(f"{MAIN_WINDOW_WIDTH}x{MAIN_WINDOW_HEIGHT}")
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
@@ -47,12 +48,12 @@ class Application(ctk.CTk):
         self.right_sidebar_frame.grid(row=0, column=2, rowspan=4, sticky = "nsew")
         self.right_sidebar_frame.grid_rowconfigure(5, weight=1)
 
+        self.select_gojects_label = ctk.CTkLabel(self.right_sidebar_frame, text="Selected Gojects", font=ctk.CTkFont(size=20, weight="bold"))
+        self.select_gojects_label.grid(row=0, column=2, padx=20, pady=(20, 10))
+
         # create scrollable frame
         self.scrollable_frame = ScrollableFrame(self.right_sidebar_frame, width=RIGHT_FRAME_WIDTH)
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 10), pady=(10, 10))
-            
-        for i in range(self.__settings_manager.goject_counter):
-            GojectCheckbox(master=self.scrollable_frame.scrollable_canvas, name=self.__settings_manager.goject_buffer[i].name, status=self.__settings_manager.goject_buffer[i].status, type=self.__settings_manager.goject_buffer[i].type)
             
     def draw_center_image(self):
         self.center_frame = ctk.CTkFrame(self, width=140, corner_radius=0,fg_color="transparent")
@@ -61,16 +62,16 @@ class Application(ctk.CTk):
         # Load an image using OpenCV
         self.cv_img = cv.cvtColor(cv.imread("./utils/bg.jpg"), cv.COLOR_BGR2RGB)
         # Get the image dimensions (OpenCV stores image data as NumPy ndarray)
-        self.height, self.width, no_channels = self.cv_img.shape
+        height, width, no_channels = self.cv_img.shape
         # Create a canvas that can fit the above image
-        self.canvas = tk.Canvas(self.center_frame, width = self.width, height = self.height, bd=0, highlightthickness=0, relief='ridge', bg="black")
+        self.canvas = tk.Canvas(self.center_frame, width = width, height = height, bd=0, highlightthickness=0, relief='ridge', bg="black")
         self.canvas.grid(row=0, column=0)
         # Use PIL (Pillow) to convert the NumPy ndarray to a PhotoImage
         self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.cv_img))
         # Add a PhotoImage to the Canvas
         #self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
         # Button that lets the user blur the image
-        self.btn_blur=ctk.CTkButton(self.center_frame, command=lambda:print("works bro"), text="Record")
+        self.btn_blur=ctk.CTkButton(self.center_frame, text="Record", state="disabled")
         self.btn_blur.grid(row=1, padx=20, pady=10)
         
     def draw_left_frame(self):
@@ -91,7 +92,7 @@ class Application(ctk.CTk):
         self.config_gojects_button = ctk.CTkButton(self.left_sidebar_frame, command=self.settings_gojects_button_press, text = "Gojects Configuration")
         self.config_gojects_button.grid(row=3, column=0, padx=20, pady=10)
         #Process Data Button
-        self.process_data_button = ctk.CTkButton(self.left_sidebar_frame, command=self.process_data_button_press, text="Process Data")
+        self.process_data_button = ctk.CTkButton(self.left_sidebar_frame, command=self.process_data_button_press, text="Process Data", state="disabled")
         self.process_data_button.grid(row=4, column=0, padx=20, pady=10)
         #Quick Log Duration Spinbox
 
@@ -111,33 +112,43 @@ class Application(ctk.CTk):
         self.long_log_spinbox.set(self.__long_log_timer)
     
     def draw_gojects_selection_window(self):
-        pass
+        self.gojects_selection_window = GojectSelectWindow(parent=self)
 
-    def create_progress_bar_block(self, goject: Goject):
-        pass
+    def draw_gojects_edit_window(self):
+        self.gojects_edit_window = GojectEditWindow(parent=self)
 
-    def select_gojects(self):
-        pass 
+    def draw_process_data_window(self):
+        self.process_data_window = ProcessDataWindow(parent=self)
+
+    def select_gojects(self): 
+        selected_gojects = []
+        self.draw_gojects_selection_window()
+        selected_gojects_widgets = []
+        for i in range(self.__settings_manager.goject_counter):
+            goject_checkbox = GojectCheckbox(master=self.scrollable_frame.scrollable_canvas, name=self.__settings_manager.goject_buffer[i].name, status=self.__settings_manager.goject_buffer[i].status, type=self.__settings_manager.goject_buffer[i].type)
+            selected_gojects_widgets.append(goject_checkbox)
+        self.update()
+        return selected_gojects
 
     def quick_log_button_press(self):
-        self.select_gojects()
-        #when done, show prelude for 45s
-        #iterate for each goal for 15s. Once done, change the box status to blocked
+        gojects_selected = self.select_gojects()
+        #when done seleting, show prelude for 45s (video or animation)
+        #loop-iterate for each gojects selected. Once done, change the checkbox and progressbar values
         self.record_and_save(self.quick_log_spinbox.get(), "Quick_Logs")
-        #clear the right_sidebar
+        #clear the right_sidebar after {10 s}
         
     def long_log_button_press(self):
-        self.select_gojects()
-        #TO DO: when done, show prelude for 15s
-        #create project bar
-        #iterate for each project for 1min. 
+        gojects_selected = self.select_gojects()
+        #TO DO: when done selecting, show prelude for 15s (video)
+        #loop-iterate for each gojects selected. Once done, change the checkbox and progressbar values
         self.record_and_save(self.long_log_spinbox.get(), "Long_Logs")
+        #clear the right_sidebar after {10 s}
 
     def settings_gojects_button_press(self):
-        pass
+        self.draw_gojects_edit_window()
     
     def process_data_button_press(self):
-        pass
+        self.draw_process_data_window()
 
     def record_and_save(self, duration, type_recording="Undefined", folder_name="Type-Untitled", file_name=datetime.today().strftime('%Y-%m-%d_%H-%M-%S')):
         self.__save_dir = self.__file_manager.file_manager(type_recording,folder_name)
