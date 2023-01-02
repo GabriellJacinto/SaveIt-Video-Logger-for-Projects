@@ -2,14 +2,13 @@ import customtkinter
 import tkinter as tk
 from typing import Union, Callable
 
-from src.config import COLORS, TOPICS
+from src.config import COLORS, TOPICS, MAIN_WINDOW_NAME
 
 class CreateGojectButton(customtkinter.CTkFrame):
     def __init__(self, *args, master, toplevelwindow, width=200, **kwargs):
-        self.master = master
         self.toplevelwindow = toplevelwindow
-        super().__init__(*args, master=self.master, **kwargs)
-        self.bottom_frame = customtkinter.CTkFrame(self.master, width=width)
+        super().__init__(*args, master=master, **kwargs)
+        self.bottom_frame = customtkinter.CTkFrame(master, width=width)
         self.bottom_frame.grid(row=0, column=0, columnspan = 2, pady=(5, 0))
         self.bottom_frame.grid_columnconfigure(0,weight=0)
         self.bottom_frame.grid_columnconfigure((1,2),weight=0)
@@ -43,7 +42,7 @@ class CreateGojectButton(customtkinter.CTkFrame):
         status = self.status_option.get()
         topic = self.topics_option.get()
         due_date = self.date_entry.get()
-        
+
         self.toplevelwindow.main_window.settings_manager.create_goject(name, type, status, topic, due_date)
         
         self.name_entry.delete(0,len(name))
@@ -65,31 +64,82 @@ class ScrollableFrame(customtkinter.CTkFrame):
 
         canvas.configure(yscrollcommand=scrollbar.set)
 
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        #canvas.pack(side="left", fill="both", expand=True)
+        #scrollbar.pack(side="right", fill="y")
+
+        canvas.grid(row=0, column=0, sticky="nsew")
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+class GojectEditFrame(customtkinter.CTkFrame):
+    def __init__(self, *args, master, toplevelwindow, row, id, name: str = "Example", status: str = "Backlog", topic: str = "", due_date: str = "", width: int = 100, height: int = 32, command: Callable = None, **kwargs):
+        super().__init__(*args, master=master, width=width, height=height, **kwargs)
+        self.toplevelwindow = toplevelwindow
+        self.id = id
+        self.name = name
+        self.status = status
+        self.topic = topic
+        
+        self.frame = customtkinter.CTkFrame(self.master, width=width, fg_color="transparent")
+        self.frame.grid(row=row, column=0, pady=(5, 0))
+        self.frame.grid_columnconfigure(0,weight=1)
+        self.frame.grid_columnconfigure((1,2,3),weight=0)
+        self.frame.grid_rowconfigure((0, 1, 2), weight=0)
+        
+        self.bullet_point = customtkinter.CTkRadioButton(self.frame, text="{} ({})".format(self.name, status), font = customtkinter.CTkFont(weight="bold"), text_color=COLORS[status],command=self.bullet_point_select)
+        self.topic_date_label = customtkinter.CTkLabel(self.frame, text="{} \t {}".format(topic, due_date), font = customtkinter.CTkFont(size = 10, slant="italic"))        
+        self.edit_name_button = customtkinter.CTkButton(self.frame, border_width=2, text="Rename", command=self.edit_name_button_press)
+        self.status_option = customtkinter.CTkOptionMenu(self.frame, dynamic_resizing=False, values=["Backlog", "In Progress", "Completed"], command=self.edit_status_button_press)
+        self.edit_date_button = customtkinter.CTkButton(self.frame, border_width=2, text="Due Date", command=self.edit_date_button_press)
+        self.delete_button = customtkinter.CTkButton(self.frame, border_width=2, text="Delete", command=self.delete_button_press, fg_color="red")
+
+        self.bullet_point.grid(row=0, column=0, columnspan=4, pady=(5, 0))   
+        self.topic_date_label.grid(row=1, column=0, columnspan=4, pady=(5, 0)) 
+
+    def bullet_point_select(self):
+        self.edit_name_button.grid(row=2, column=0, pady=(5, 0))
+        self.status_option.grid(row=2, column=1, pady=(5, 0))
+        self.edit_date_button.grid(row=2, column=2, pady=(5, 0))
+        self.delete_button.grid(row=2, column=3, pady=(5, 0))
+
+    def edit_date_button_press(self):
+        dialog = customtkinter.CTkInputDialog(text="Type a new Due Date (D/M/YYYY):", title="{} - Edit Due Date".format(MAIN_WINDOW_NAME))
+        value = dialog.get_input()
+        if value == "":
+            print("Valor Invalido")
+        else:
+            self.toplevelwindow.main_window.settings_manager.alter_goject(self.id, "due_date", value)
+            self.topic_date_label.configure(text="{} \t {}".format(self.topic, value))
+
+    def edit_status_button_press(self, new_status):
+        self.toplevelwindow.main_window.settings_manager.alter_goject(self.id, "status", new_status)
+        self.bullet_point.configure(text="{} ({})".format(self.name, new_status), text_color=COLORS[new_status])
+    
+    def edit_name_button_press(self):
+        dialog = customtkinter.CTkInputDialog(text="Type a new Name:", title="{} - Edit Name".format(MAIN_WINDOW_NAME))
+        value = dialog.get_input()
+        if value == "" or value == None:
+            print("Valor Invalido")
+        else:
+            self.toplevelwindow.main_window.settings_manager.alter_goject(self.id, "name", value)
+            self.bullet_point.configure(text="{} ({})".format(value, self.status))
+
+    def delete_button_press(self):
+        dialog = customtkinter.CTkInputDialog(text="Are you sure? (Y/n)", title="{} - Delete Goject".format(MAIN_WINDOW_NAME))
+        value = dialog.get_input()
+        if value.upper() == "Y":
+            self.toplevelwindow.main_window.settings_manager.delete_goject(self.id)
+            #self.grid_remove()
+            self.toplevelwindow.verify_update_widgets_deletion()
 
 class GojectSwitch(customtkinter.CTkFrame):
-    def __init__(self, *args, master, name: str = "Example", status: str = "Backlog", type:str = "Goal", width: int = 100, height: int = 32, command: Callable = None, **kwargs):
+    def __init__(self, *args, master, name: str = "Example", status: str = "Backlog", topic: str = "", due_date: str = "", width: int = 100, height: int = 32, command: Callable = None, **kwargs):
         super().__init__(*args, master=master, width=width, height=height, **kwargs)
-        self.type = type
-        self.checkbox = customtkinter.CTkCheckBox(master, text="{}".format(name), checkbox_height=18, checkbox_width=18, font = customtkinter.CTkFont(weight="bold"))
-        self.seg_button = customtkinter.CTkSegmentedButton(master,values=["Goal", "Project"], command = self.reset_selection)
-        self.status_label = customtkinter.CTkLabel(master, text="Status: {}".format(status), font = customtkinter.CTkFont(size = 10, slant="italic"), text_color=COLORS[status])        
-        self.progressbar = customtkinter.CTkProgressBar(master, progress_color = "green")
-        self.blank_label = customtkinter.CTkLabel(master, text=" ")
-
-        self.seg_button.set(self.type)
-        self.progressbar.set(0)
-
-        self.checkbox.pack(anchor=tk.W)   
-        self.seg_button.pack(anchor=tk.CENTER)
-        self.status_label.pack(anchor=tk.CENTER)
-        self.progressbar.pack(anchor=tk.CENTER)
-        self.blank_label.pack(anchor=tk.W)
-
-    def set_checkbox_value(self):
-        self.checkbox.select()
-
+        self.switch = customtkinter.CTkSwitch(master, text="{} ({})".format(name, status), font = customtkinter.CTkFont(weight="bold"), text_color=COLORS[status], switch_height=18, switch_width=18,)
+        self.status_label = customtkinter.CTkLabel(master, text="{} \t {}".format(topic, due_date), font = customtkinter.CTkFont(size = 10, slant="italic"))        
+        
+        self.switch.pack(anchor=tk.W)   
+        self.status_label.pack(anchor=tk.E)  
+    
 class GojectCheckbox(customtkinter.CTkFrame):
     def __init__(self, *args, master, name: str = "Example", status: str = "Backlog", type:str = "Goal", width: int = 100, height: int = 32, command: Callable = None, **kwargs):
         super().__init__(*args, master=master, width=width, height=height, **kwargs)
@@ -118,7 +168,6 @@ class GojectCheckbox(customtkinter.CTkFrame):
     
     def reset_selection(self, _):
         self.seg_button.set(self.type)
-
 
 class Spinbox(customtkinter.CTkFrame):
     def __init__(self, *args, width: int = 100, height: int = 32, step_size: Union[int, float] = 1, command: Callable = None, **kwargs):

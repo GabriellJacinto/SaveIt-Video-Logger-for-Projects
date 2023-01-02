@@ -43,7 +43,7 @@ This software is currently a work in progress. The current version is capable of
 
 - [x] Execution by command line (see [Installation](#🚀-Installing-SaveIt:-Personal-Video-Logger))
 - [ ] Manage Goals and Projects:
-  - [ ] Edit Gojects Window
+  - [x] Edit Gojects Window
     - [x] Create Gojects
     - [x] Delete Gojects
     - [x] Edit Gojects

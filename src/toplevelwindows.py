@@ -2,20 +2,21 @@ import customtkinter
 import tkinter as tk
 from typing import List
 
-from src.widgets import CreateGojectButton
+from src.widgets import CreateGojectButton, ScrollableFrame, GojectEditFrame
 from src.config import *
 
 class GojectSelectWindow(customtkinter.CTkToplevel):
-    def __init__(self, *args, main_window, data: List, **kwargs):
+    def __init__(self, *args, main_window, projects_list: List, goals_list: List, **kwargs):
         super().__init__(*args, **kwargs)
         self.__main_window = main_window
-        self.data = data
+        self.projects_list = projects_list
+        self.goals_list = goals_list
         self.title(GOJECT_SELECTION_WINDOW_NAME)
         self.geometry("{}x{}".format(GOJECT_SELECTION_WINDOW_WIDTH,GOJECT_SELECTION_WINDOW_HEIGHT))
 
     @property
-    def parent(self):
-        return self.__parent
+    def main_window(self):
+        return self.__main_window
 
         # create tabview
         """
@@ -54,10 +55,11 @@ class GojectSelectWindow(customtkinter.CTkToplevel):
 """
 
 class GojectEditWindow(customtkinter.CTkToplevel):
-    def __init__(self, *args, main_window, data: List, **kwargs):
+    def __init__(self, *args, main_window, projects_list: List, goals_list: List, **kwargs):
         super().__init__(*args, **kwargs)
         self.__main_window = main_window
-        self.data = data
+        self.projects_list = projects_list
+        self.goals_list = goals_list
 
         self.title(GOJECT_EDIT_WINDOW_NAME)
         self.geometry("{}x{}".format(GOJECT_EDIT_WINDOW_WIDTH,GOJECT_EDIT_WINDOW_HEIGHT))
@@ -73,47 +75,41 @@ class GojectEditWindow(customtkinter.CTkToplevel):
         self.tabview.tab("Goals").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
         self.tabview.tab("Projects").grid_columnconfigure(0, weight=1)
         self.tabview.tab("Add Goject").grid_columnconfigure(0, weight=1)
+           
+        self.create_button_1 = CreateGojectButton(master=self.tabview.tab("Add Goject"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
+        self.scrollable_frame_1 = ScrollableFrame(self.tabview.tab("Goals"), width=600)
+        self.scrollable_frame_2 = ScrollableFrame(self.tabview.tab("Projects"), width=600)
         
-        #Create Bottom Frame   
-        self.create_button = CreateGojectButton(master=self.tabview.tab("Add Goject"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
+        if len(self.goals_list) == 0:
+            self.create_button_2 = CreateGojectButton(master=self.tabview.tab("Goals"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
+        else:
+            self.scrollable_frame_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
+            for i in range(len(self.goals_list)):
+                goal_frame = GojectEditFrame(master=self.scrollable_frame_1.scrollable_canvas, toplevelwindow=self, row=i, 
+                                            id=self.goals_list[i].id, name=self.goals_list[i].name, status=self.goals_list[i].status, 
+                                            topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date)
 
-        self.test = customtkinter.CTkFrame(self.tabview.tab("Goals"))
-        self.test.grid(row=0, column=0, padx=20, pady=(20, 10))
-
-        self.optionmenu_1 = customtkinter.CTkOptionMenu(self.test, dynamic_resizing=False,
-                                                        values=["Value 1", "Value 2", "Value Long Long Long"])
-        self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.combobox_1 = customtkinter.CTkComboBox(self.tabview.tab("Goals"),
-                                                    values=["Value 1", "Value 2", "Value Long....."])
-        self.combobox_1.grid(row=1, column=0, padx=20, pady=(10, 10))
-        self.string_input_button = customtkinter.CTkButton(self.tabview.tab("Goals"), text="Open CTkInputDialog",
-                                                           command=self.open_input_dialog_event)
-        self.string_input_button.grid(row=2, column=0, padx=20, pady=(10, 10))
-        self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Projects"), text="CTkLabel on Tab 2")
-        self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)        
-
+        if len(self.projects_list) == 0:
+            self.create_button_3 = CreateGojectButton(master=self.tabview.tab("Projects"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
+        else:
+            self.scrollable_frame_2.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
+            for i in range(len(self.projects_list)):
+                project_frame = GojectEditFrame(master=self.scrollable_frame_2.scrollable_canvas,toplevelwindow=self, row=i, 
+                                                id=self.projects_list[i].id, name=self.projects_list[i].name, status=self.projects_list[i].status, 
+                                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date)
+       
     @property
     def main_window(self):
         return self.__main_window
 
-    def open_input_dialog_event(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
-        print("CTkInputDialog:", dialog.get_input())
+    def verify_update_widgets_deletion(self):
+       pass
+       # FUNCIONA!
+       # if len(self.projects_list) == 0:
+       # self.scrollable_frame_2.grid_forget()
+       # self.create_button_3 = CreateGojectButton(master=self.tabview.tab("Projects"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
+       
 
-# create tabview
-"""
-        self.select_gojects_label = ctk.CTkLabel(self.right_sidebar_frame, text="Selected Gojects", font=ctk.CTkFont(size=20, weight="bold"))
-        self.select_gojects_label.grid(row=0, column=2, padx=20, pady=(20, 10))
-
-        # create scrollable frame
-        self.scrollable_frame = ScrollableFrame(self.right_sidebar_frame, width=RIGHT_FRAME_WIDTH)
-        self.scrollable_frame.grid(row=1, column=2, padx=(20, 10), pady=(10, 10))
-
-        for i in range(self.__settings_manager.goject_counter):
-            goject_checkbox = GojectCheckbox(master=self.scrollable_frame.scrollable_canvas, name=self.__settings_manager.goject_buffer[i].name, status=self.__settings_manager.goject_buffer[i].status, type=self.__settings_manager.goject_buffer[i].type)
-            selected_gojects_widgets.append(goject_checkbox)
-        self.update()
-"""
 
 class ProcessDataWindow(customtkinter.CTkToplevel):
     def __init__(self, *args, main_window, data, **kwargs):

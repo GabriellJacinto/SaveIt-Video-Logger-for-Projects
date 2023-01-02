@@ -65,14 +65,18 @@ class SettingsManager:
     def __init__(self, file_manager: FileManager) -> None:
         self.__file_manager = file_manager
         self.__goject_buffer = file_manager.load_gojects()
+        self.__projects = []
+        self.__goals = []
         self.__goject_counter = len(self.__goject_buffer)
         self.__number_goals = 0
         self.__number_projects = 0
 
         for goject in self.__goject_buffer:
             if goject.type == "Goal":
+                self.__goals.append(goject)
                 self.__number_goals += 1
             elif goject.type == "Project":
+                self.__projects.append(goject)
                 self.__number_projects += 1
             else:
                 print("{} has wrong type name, please edit".format(goject.name))
@@ -81,7 +85,15 @@ class SettingsManager:
     @property
     def goject_buffer(self):
         return self.__goject_buffer
+
+    @property
+    def projects(self):
+        return self.__projects
     
+    @property
+    def goals(self):
+        return self.__goals
+
     @property
     def number_goals(self):
         return self.__number_goals
@@ -99,12 +111,14 @@ class SettingsManager:
         self.__goject_buffer = gojects_list
         self.save_gojects()
 
-    def create_goject(self, name, type, status, topic, due_date=None, parent=None):
+    def create_goject(self, name, type, status, topic, due_date="", parent=None):
         new_goject = Goject(self.__goject_counter, name, type, status, topic, due_date, parent)
         self.__goject_counter += 1
         if type == "Goal":
+            self.__goals.append(new_goject)
             self.__number_goals += 1
         elif type == "Project":
+            self.__projects.append(new_goject)
             self.__number_projects += 1
         self.__goject_buffer.append(new_goject)
         self.save_gojects()
@@ -121,13 +135,13 @@ class SettingsManager:
         elif property == "parent":
             self.__goject_buffer[id].parent = self.__goject_buffer[new_value]
         else:
-            #pop up warning
+            #TO DO: pop up warning window
             print("Sorry, Gabe. I'm afraid you can't alter {}".format(property))
             return
         self.save_gojects()
 
     def delete_goject(self, id):
-        #verificar se operacao é possivel de ser feita
+        #TO DO: verify if operation can be done with the index
         type = self.__goject_buffer[id].type
         del self.__goject_buffer[id]
         if type == "Goal":
@@ -135,11 +149,26 @@ class SettingsManager:
         elif type == "Project":
             self.__number_projects -= 1
         self.__goject_counter -= 1
-        #reset the following gojects' id to not mess up the counter
+        #resets the following gojects' id to not mess up the counter
         for goject in self.__goject_buffer[id:]:
             goject.id -= 1
+        self.reset_buffers()
         self.save_gojects()
     
+    def reset_buffers(self):
+        self.__projects = []
+        self.__goals = []
+        for goject in self.__goject_buffer:
+            if goject.type == "Goal":
+                self.__goals.append(goject)
+            elif goject.type == "Project":
+                self.__projects.append(goject)
+            else:
+                print("{} has wrong type name, please edit".format(goject.name))
+
+        self.__number_goals = len(self.__goals)
+        self.__number_projects = len(self.__projects)
+
     def save_gojects(self):
         self.show_count_status()
         self.__file_manager.save_gojects(self.__goject_buffer)
@@ -149,7 +178,7 @@ class SettingsManager:
 
     def confirm_operation(self, message):
         confirmation = False
-        #create a pop up to confirm del and creation
+        #TO DO: create a pop up to confirm del and creation
         return confirmation
 
 if __name__ == '__main__':

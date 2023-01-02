@@ -120,10 +120,11 @@ class Application(ctk.CTk):
         self.long_log_spinbox.set(self.__long_log_timer)
     
     def draw_gojects_selection_window(self):
-        self.gojects_selection_window = GojectSelectWindow(main_window=self, data = "hi")
+        self.gojects_selection_window = GojectSelectWindow(main_window=self, projects_list=self.__settings_manager.projects, goals_list=self.__settings_manager.goals)
+        pass
 
     def draw_gojects_edit_window(self):
-        self.gojects_edit_window = GojectEditWindow(main_window=self, data = "hi")
+        self.gojects_edit_window = GojectEditWindow(main_window=self, projects_list=self.__settings_manager.projects, goals_list=self.__settings_manager.goals)
 
     def draw_process_data_window(self):
         self.process_data_window = ProcessDataWindow(main_window=self, data = "hi")
@@ -140,7 +141,7 @@ class Application(ctk.CTk):
 
     def quick_log_button_press(self):
         gojects_selected = self.select_gojects()
-        #when done seleting, show prelude for 45s (video or animation)
+        #TO DO: when done seleting, show prelude for 45s (video or animation)
         #loop-iterate for each gojects selected. Once done, change the checkbox, progressbar, and videoprgressbar values
         self.record_and_save(self.quick_log_spinbox.get(), "Quick_Logs")
         #clear the right_sidebar after {10 s} and reset videoprogress bar
