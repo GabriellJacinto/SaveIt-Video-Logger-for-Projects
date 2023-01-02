@@ -64,6 +64,9 @@ This software is currently a work in progress. The current version is capable of
 <summary>Version 1.2.0 Features</summary>
 
 - [ ] Execution by executable
+- [ ] Gojects:
+  - [ ] Add attribute of parent/child goject
+  - [ ] Create visual representation of parent/child goject (as a pathway visualizer)
 - [ ] Recording:
   - [ ] Show recording on the main menu (currently opens up another window)
     - [ ] Create progress bar for the whole duration of the log

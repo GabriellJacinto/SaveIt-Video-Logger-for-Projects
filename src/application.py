@@ -30,6 +30,10 @@ class Application(ctk.CTk):
         self.__quick_log_timer = DEFAULT_QUICKLOG_TIME
         self.__long_log_timer = DEFAULT_LONGLOG_TIME
 
+    @property
+    def settings_manager(self):
+        return self.__settings_manager
+
     def draw_window(self):
         self.title(MAIN_WINDOW_NAME)
         self.geometry(f"{MAIN_WINDOW_WIDTH}x{MAIN_WINDOW_HEIGHT}")
@@ -41,7 +45,7 @@ class Application(ctk.CTk):
 
         self.draw_left_frame()
         self.draw_right_frame()
-        self.draw_center_image()
+        self.draw_center_frame()
 
     def draw_right_frame(self):
         self.right_sidebar_frame = ctk.CTkFrame(self, width=RIGHT_FRAME_WIDTH, corner_radius=0)
@@ -55,7 +59,7 @@ class Application(ctk.CTk):
         self.scrollable_frame = ScrollableFrame(self.right_sidebar_frame, width=RIGHT_FRAME_WIDTH)
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 10), pady=(10, 10))
             
-    def draw_center_image(self):
+    def draw_center_frame(self):
         self.center_frame = ctk.CTkFrame(self, width=140, corner_radius=0,fg_color="transparent")
         self.center_frame.grid(row=0, column=1, rowspan=4)
         self.center_frame.grid_rowconfigure(5, weight=1)
@@ -71,8 +75,12 @@ class Application(ctk.CTk):
         # Add a PhotoImage to the Canvas
         #self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
         # Button that lets the user blur the image
-        self.btn_blur=ctk.CTkButton(self.center_frame, text="Record", state="disabled")
-        self.btn_blur.grid(row=1, padx=20, pady=10)
+        self.record_button=ctk.CTkButton(self.center_frame, text="Record", state="disabled")
+        self.record_button.grid(row=1, padx=20, pady=10)
+
+        self.video_progressbar = ctk.CTkProgressBar(self.center_frame, progress_color = "blue", width=600)
+        self.video_progressbar.grid(row=2, padx=20, pady=10)
+        self.video_progressbar.set(0)
         
     def draw_left_frame(self):
         self.left_sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
@@ -112,13 +120,13 @@ class Application(ctk.CTk):
         self.long_log_spinbox.set(self.__long_log_timer)
     
     def draw_gojects_selection_window(self):
-        self.gojects_selection_window = GojectSelectWindow(parent=self)
+        self.gojects_selection_window = GojectSelectWindow(main_window=self, data = "hi")
 
     def draw_gojects_edit_window(self):
-        self.gojects_edit_window = GojectEditWindow(parent=self)
+        self.gojects_edit_window = GojectEditWindow(main_window=self, data = "hi")
 
     def draw_process_data_window(self):
-        self.process_data_window = ProcessDataWindow(parent=self)
+        self.process_data_window = ProcessDataWindow(main_window=self, data = "hi")
 
     def select_gojects(self): 
         selected_gojects = []
@@ -133,16 +141,16 @@ class Application(ctk.CTk):
     def quick_log_button_press(self):
         gojects_selected = self.select_gojects()
         #when done seleting, show prelude for 45s (video or animation)
-        #loop-iterate for each gojects selected. Once done, change the checkbox and progressbar values
+        #loop-iterate for each gojects selected. Once done, change the checkbox, progressbar, and videoprgressbar values
         self.record_and_save(self.quick_log_spinbox.get(), "Quick_Logs")
-        #clear the right_sidebar after {10 s}
+        #clear the right_sidebar after {10 s} and reset videoprogress bar
         
     def long_log_button_press(self):
         gojects_selected = self.select_gojects()
         #TO DO: when done selecting, show prelude for 15s (video)
-        #loop-iterate for each gojects selected. Once done, change the checkbox and progressbar values
+        #loop-iterate for each gojects selected. Once done, change the checkbox, progressbar, and videoprgressbar values
         self.record_and_save(self.long_log_spinbox.get(), "Long_Logs")
-        #clear the right_sidebar after {10 s}
+        #clear the right_sidebar after {10 s} and reset videoprogress bar
 
     def settings_gojects_button_press(self):
         self.draw_gojects_edit_window()

@@ -102,6 +102,10 @@ class SettingsManager:
     def create_goject(self, name, type, status, topic, due_date=None, parent=None):
         new_goject = Goject(self.__goject_counter, name, type, status, topic, due_date, parent)
         self.__goject_counter += 1
+        if type == "Goal":
+            self.__number_goals += 1
+        elif type == "Project":
+            self.__number_projects += 1
         self.__goject_buffer.append(new_goject)
         self.save_gojects()
     
@@ -124,7 +128,12 @@ class SettingsManager:
 
     def delete_goject(self, id):
         #verificar se operacao é possivel de ser feita
+        type = self.__goject_buffer[id].type
         del self.__goject_buffer[id]
+        if type == "Goal":
+            self.__number_goals -= 1
+        elif type == "Project":
+            self.__number_projects -= 1
         self.__goject_counter -= 1
         #reset the following gojects' id to not mess up the counter
         for goject in self.__goject_buffer[id:]:
@@ -147,28 +156,28 @@ if __name__ == '__main__':
     file = FileManager()
     manager = SettingsManager(file)
     
-    manager.create_goject("Main Void", "Goal", "Backlog", Topic.ARTIFICIAL_INTELLIGENCE)
-    manager.create_goject("Research Scientist at Big Tech", "Goal", "Backlog", Topic.ARTIFICIAL_INTELLIGENCE)
-    manager.create_goject("PhD", "Goal", "Backlog", Topic.ARTIFICIAL_INTELLIGENCE)
-    manager.create_goject("Kaggle Grandmaster", "Goal", "Backlog", Topic.ARTIFICIAL_INTELLIGENCE)
-    manager.create_goject("ICPC", "Goal", "Backlog", Topic.PROGRAMMING)
-    manager.create_goject("PIC", "Goal", "Backlog", Topic.ARTIFICIAL_INTELLIGENCE)
-    manager.create_goject("PIX Internship", "Goal", "Backlog", Topic.ARTIFICIAL_INTELLIGENCE)
-    manager.create_goject("College", "Goal", "Backlog", Topic.COMPUTER_SCIENCE)
-    manager.create_goject("Three Languages", "Goal", "Backlog", Topic.LANGUAGES)
-    manager.create_goject("80KG Calisthenics", "Goal", "Backlog", Topic.SPORTS_HEALTH)
-    manager.create_goject("Voluntariado", "Goal", "Backlog", Topic.ENTREPRENEURSHIP)
-    manager.create_goject("Non-Fiction Book", "Goal", "Backlog", Topic.WRITING)
-    manager.create_goject("Write with left hand", "Goal", "Backlog", Topic.WRITING)
-    manager.create_goject("Personal Website", "Goal", "Backlog", Topic.PROGRAMMING)
-    manager.create_goject("Finance", "Goal", "Backlog", Topic.FINANCE)
-    manager.create_goject("Live Loops", "Goal", "Backlog", Topic.MUSIC)
-    manager.create_goject("Orquestra", "Goal", "Backlog", Topic.MUSIC)
-    manager.create_goject("80 books", "Goal", "Backlog", Topic.BOOKS)
-    manager.create_goject("Visual Poetry", "Goal", "Backlog", Topic.PHOTOGRAPHY_DESIGN)
-    manager.create_goject("Imagetic References", "Goal", "Backlog", Topic.DRAWING_PAINTING)
-    manager.create_goject("Mindful Digressions", "Goal", "Backlog", Topic.PHOTOGRAPHY_DESIGN)
-    manager.create_goject("3 Sci-fi Books", "Goal", "Backlog", Topic.WRITING)
-    manager.create_goject("Graphic Novel", "Goal", "Backlog", Topic.PHOTOGRAPHY_DESIGN)
-    manager.create_goject("Game", "Goal", "Backlog", Topic.PROGRAMMING)
-    manager.create_goject("Art House", "Goal", "Backlog", Topic.PHOTOGRAPHY_DESIGN)
+    manager.create_goject("Main Void", "Goal", "Backlog", "ARTIFICIAL_INTELLIGENCE")
+    manager.create_goject("Research Scientist at Big Tech", "Goal", "Backlog", "ARTIFICIAL_INTELLIGENCE")
+    manager.create_goject("PhD", "Goal", "Backlog", "ARTIFICIAL_INTELLIGENCE")
+    manager.create_goject("Kaggle Grandmaster", "Goal", "Backlog", "ARTIFICIAL_INTELLIGENCE")
+    manager.create_goject("ICPC", "Goal", "Backlog", "PROGRAMMING")
+    manager.create_goject("PIC", "Goal", "Backlog", "ARTIFICIAL_INTELLIGENCE")
+    manager.create_goject("PIX Internship", "Goal", "Backlog", "ARTIFICIAL_INTELLIGENCE")
+    manager.create_goject("College", "Goal", "Backlog", "COMPUTER_SCIENCE")
+    manager.create_goject("Three Languages", "Goal", "Backlog", "LANGUAGES")
+    manager.create_goject("80KG Calisthenics", "Goal", "Backlog", "SPORTS_HEALTH")
+    manager.create_goject("Voluntariado", "Goal", "Backlog", "ENTREPRENEURSHIP")
+    manager.create_goject("Non-Fiction Book", "Goal", "Backlog", "WRITING")
+    manager.create_goject("Write with left hand", "Goal", "Backlog", "WRITING")
+    manager.create_goject("Personal Website", "Goal", "Backlog", "PROGRAMMING")
+    manager.create_goject("Finance", "Goal", "Backlog", "FINANCE")
+    manager.create_goject("Live Loops", "Goal", "Backlog", "MUSIC")
+    manager.create_goject("Orquestra", "Goal", "Backlog", "MUSIC")
+    manager.create_goject("80 books", "Goal", "Backlog", "BOOKS")
+    manager.create_goject("Visual Poetry", "Goal", "Backlog", "PHOTOGRAPHY_DESIGN")
+    manager.create_goject("Imagetic References", "Goal", "Backlog", "DRAWING_PAINTING")
+    manager.create_goject("Mindful Digressions", "Goal", "Backlog", "PHOTOGRAPHY_DESIGN")
+    manager.create_goject("3 Sci-fi Books", "Goal", "Backlog", "WRITING")
+    manager.create_goject("Graphic Novel", "Goal", "Backlog", "PHOTOGRAPHY_DESIGN")
+    manager.create_goject("Game", "Goal", "Backlog", "PROGRAMMING")
+    manager.create_goject("Art House", "Goal", "Backlog", "PHOTOGRAPHY_DESIGN")
