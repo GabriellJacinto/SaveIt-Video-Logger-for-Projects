@@ -67,7 +67,7 @@ class GojectEditWindow(customtkinter.CTkToplevel):
         self.grid_columnconfigure(2, weight=0)
 
         #Create Tab
-        self.tabview = customtkinter.CTkTabview(self, width=600, height=630)
+        self.tabview = customtkinter.CTkTabview(self, width=500, height=630)
         self.tabview.grid(row=0, column = 0, columnspan=3, sticky="n")
         self.tabview.add("Goals")
         self.tabview.add("Projects")
@@ -77,8 +77,8 @@ class GojectEditWindow(customtkinter.CTkToplevel):
         self.tabview.tab("Add Goject").grid_columnconfigure(0, weight=1)
            
         self.create_button_1 = CreateGojectButton(master=self.tabview.tab("Add Goject"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
-        self.scrollable_frame_1 = ScrollableFrame(self.tabview.tab("Goals"), width=600)
-        self.scrollable_frame_2 = ScrollableFrame(self.tabview.tab("Projects"), width=600)
+        self.scrollable_frame_1 = ScrollableFrame(self.tabview.tab("Goals"), width=500)
+        self.scrollable_frame_2 = ScrollableFrame(self.tabview.tab("Projects"), width=500)
 
         self.create_button_goals_tab = CreateGojectButton(master=self.tabview.tab("Goals"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
         self.create_button_projects_tab = CreateGojectButton(master=self.tabview.tab("Projects"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)

@@ -87,32 +87,31 @@ class ScrollableFrame(customtkinter.CTkFrame):
         scrollbar.grid(row=0, column=1, sticky="ns")
 
 class GojectEditFrame(customtkinter.CTkFrame):
-    def __init__(self, *args, master, toplevelwindow, row, id, name: str = "Example", status: str = "Backlog", topic: str = "", due_date: str = "", width: int = 100, height: int = 32, command: Callable = None, **kwargs):
-        super().__init__(*args, master=master, width=width, height=height, **kwargs)
+    def __init__(self, *args, master, toplevelwindow, row, id, name: str = "Example", status: str = "Backlog", topic: str = "", due_date: str = "", width: int = 200, height: int = 32, foreground_color="transparent", **kwargs):
+        super().__init__(*args, master=master, width=width, height=height, fg_color=foreground_color, **kwargs)
         self.toplevelwindow = toplevelwindow
         self.id = id
         self.name = name
         self.status = status
         self.topic = topic
         
-        self.frame = customtkinter.CTkFrame(self.master, width=width, fg_color="transparent")
-        self.frame.grid(row=row, column=0, pady=(5, 0))
-        self.frame.grid_columnconfigure(0,weight=1)
-        self.frame.grid_columnconfigure(1,weight=0)
-        self.frame.grid_rowconfigure((0, 1, 2, 3), weight=0)
+        self.grid(row=row, column=0, padx=(10, 10), pady=(5, 10), sticky="w")
+        self.grid_columnconfigure(0,weight=1)
+        self.grid_columnconfigure(1,weight=0)
+        self.grid_rowconfigure((0, 1, 2, 3), weight=0)
         
-        self.switch = customtkinter.CTkSwitch(self.frame, text="{} ({})".format(self.name, status), font = customtkinter.CTkFont(weight="bold"), text_color=COLORS[status],command=self.switch_select)
-        self.topic_date_label = customtkinter.CTkLabel(self.frame, text="{} \t {}".format(topic, due_date), font = customtkinter.CTkFont(size = 10, slant="italic"))        
-        self.edit_name_button = customtkinter.CTkButton(self.frame, border_width=2, text="Rename", command=self.edit_name_button_press)
-        self.status_option = customtkinter.CTkOptionMenu(self.frame, dynamic_resizing=False, values=["Backlog", "In Progress", "Completed"], command=self.edit_status_button_press)
-        self.edit_date_button = customtkinter.CTkButton(self.frame, border_width=2, text="Due Date", command=self.edit_date_button_press)
-        self.delete_button = customtkinter.CTkButton(self.frame, border_width=2, text="Delete", command=self.delete_button_press, fg_color="red")
+        self.switch = customtkinter.CTkSwitch(self, text="{} ({})".format(self.name, status), font = customtkinter.CTkFont(weight="bold"), text_color=COLORS[status],command=self.switch_select)
+        self.topic_date_label = customtkinter.CTkLabel(self, text="{} \t {}".format(topic, due_date), font = customtkinter.CTkFont(size = 10))        
+        self.edit_name_button = customtkinter.CTkButton(self, border_width=2, text="Rename", command=self.edit_name_button_press)
+        self.status_option = customtkinter.CTkOptionMenu(self, dynamic_resizing=False, values=["Backlog", "In Progress", "Completed"], command=self.edit_status_button_press)
+        self.edit_date_button = customtkinter.CTkButton(self, border_width=2, text="Due Date", command=self.edit_date_button_press)
+        self.delete_button = customtkinter.CTkButton(self, border_width=2, text="Delete", command=self.delete_button_press, fg_color="red")
 
-        self.switch.grid(row=0, column=0, columnspan=4, pady=(5, 0), padx=(5, 5))   
-        self.topic_date_label.grid(row=1, column=0, columnspan=4, pady=(5, 0),padx=(5, 5)) 
+        self.switch.grid(row=0, column=0, columnspan=4, pady=(5, 0), padx=(5, 5), sticky="w")   
+        self.topic_date_label.grid(row=1, column=0, columnspan=4, pady=(5, 0),padx=(5, 5), sticky="w") 
 
     def remove_all(self):
-        self.frame.grid_forget()
+        self.grid_forget()
         self.switch.grid_forget()
         self.topic_date_label.grid_forget()
         self.edit_name_button.grid_forget()
