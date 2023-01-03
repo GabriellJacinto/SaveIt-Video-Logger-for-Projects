@@ -6,11 +6,11 @@ from src.widgets import CreateGojectButton, ScrollableFrame, GojectEditFrame
 from src.config import *
 
 class GojectSelectWindow(customtkinter.CTkToplevel):
-    def __init__(self, *args, main_window, projects_list: List, goals_list: List, **kwargs):
+    def __init__(self, *args, main_window, **kwargs):
         super().__init__(*args, **kwargs)
         self.__main_window = main_window
-        self.projects_list = projects_list
-        self.goals_list = goals_list
+        self.projects_list = self.__main_window.settings_manager.projects
+        self.goals_list = self.__main_window.settings_manager.goals
         self.title(GOJECT_SELECTION_WINDOW_NAME)
         self.geometry("{}x{}".format(GOJECT_SELECTION_WINDOW_WIDTH,GOJECT_SELECTION_WINDOW_HEIGHT))
 
@@ -55,11 +55,11 @@ class GojectSelectWindow(customtkinter.CTkToplevel):
 """
 
 class GojectEditWindow(customtkinter.CTkToplevel):
-    def __init__(self, *args, main_window, projects_list: List, goals_list: List, **kwargs):
+    def __init__(self, *args, main_window, **kwargs):
         super().__init__(*args, **kwargs)
         self.__main_window = main_window
-        self.projects_list = projects_list
-        self.goals_list = goals_list
+        self.__goals_widgets = []
+        self.__projects_widgets = []
 
         self.title(GOJECT_EDIT_WINDOW_NAME)
         self.geometry("{}x{}".format(GOJECT_EDIT_WINDOW_WIDTH,GOJECT_EDIT_WINDOW_HEIGHT))
@@ -79,37 +79,99 @@ class GojectEditWindow(customtkinter.CTkToplevel):
         self.create_button_1 = CreateGojectButton(master=self.tabview.tab("Add Goject"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
         self.scrollable_frame_1 = ScrollableFrame(self.tabview.tab("Goals"), width=600)
         self.scrollable_frame_2 = ScrollableFrame(self.tabview.tab("Projects"), width=600)
+
+        self.create_button_goals_tab = CreateGojectButton(master=self.tabview.tab("Goals"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
+        self.create_button_projects_tab = CreateGojectButton(master=self.tabview.tab("Projects"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
         
+        self.load_widgets()
+
+    @property
+    def main_window(self):
+        return self.__main_window
+
+    def load_widgets(self):
+        self.create_button_1.show()
+
+        self.projects_list = self.__main_window.settings_manager.projects
+        self.goals_list = self.__main_window.settings_manager.goals
+
         if len(self.goals_list) == 0:
-            self.create_button_2 = CreateGojectButton(master=self.tabview.tab("Goals"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
+            self.create_button_goals_tab.show()
         else:
             self.scrollable_frame_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
             for i in range(len(self.goals_list)):
                 goal_frame = GojectEditFrame(master=self.scrollable_frame_1.scrollable_canvas, toplevelwindow=self, row=i, 
                                             id=self.goals_list[i].id, name=self.goals_list[i].name, status=self.goals_list[i].status, 
                                             topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date)
+                self.__goals_widgets.append(goal_frame)
 
         if len(self.projects_list) == 0:
-            self.create_button_3 = CreateGojectButton(master=self.tabview.tab("Projects"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
+            self.create_button_projects_tab.show()
         else:
             self.scrollable_frame_2.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
             for i in range(len(self.projects_list)):
                 project_frame = GojectEditFrame(master=self.scrollable_frame_2.scrollable_canvas,toplevelwindow=self, row=i, 
                                                 id=self.projects_list[i].id, name=self.projects_list[i].name, status=self.projects_list[i].status, 
                                                 topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date)
-       
-    @property
-    def main_window(self):
-        return self.__main_window
+                self.__projects_widgets.append(project_frame)
 
-    def verify_update_widgets_deletion(self):
-       pass
-       # FUNCIONA!
-       # if len(self.projects_list) == 0:
-       # self.scrollable_frame_2.grid_forget()
-       # self.create_button_3 = CreateGojectButton(master=self.tabview.tab("Projects"), toplevelwindow = self, width=GOJECT_EDIT_WINDOW_WIDTH)
-       
+    def update_widgets_creation(self, type):
+        if type == "Project":
+            self.projects_list = self.__main_window.settings_manager.projects
+            if self.create_button_projects_tab.visible:
+                self.create_button_projects_tab.remove_all()
+                self.scrollable_frame_2.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
+            self.__projects_widgets = []
+            for i in range(len(self.projects_list)):
+                project_frame = GojectEditFrame(master=self.scrollable_frame_2.scrollable_canvas,toplevelwindow=self, row=i, 
+                                                id=self.projects_list[i].id, name=self.projects_list[i].name, status=self.projects_list[i].status, 
+                                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date)
+                self.__projects_widgets.append(project_frame)
+        elif type == "Goal":
+            self.goals_list = self.__main_window.settings_manager.goals
+            if self.create_button_goals_tab.visible:
+                self.create_button_goals_tab.remove_all()
+                self.scrollable_frame_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
+            self.__goals_widgets = []
+            for i in range(len(self.goals_list)):
+                goal_frame = GojectEditFrame(master=self.scrollable_frame_1.scrollable_canvas, toplevelwindow=self, row=i, 
+                                            id=self.goals_list[i].id, name=self.goals_list[i].name, status=self.goals_list[i].status, 
+                                            topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date)
+                self.__goals_widgets.append(goal_frame)
+        else:
+            print("Erro ao processar type '{}' no update de criação do widget".format(type))
 
+    def update_widgets_deletion(self):
+        self.projects_list = self.__main_window.settings_manager.projects
+        self.goals_list = self.__main_window.settings_manager.goals
+        
+        if len(self.goals_list) == 0:
+            self.scrollable_frame_1.grid_forget()
+            self.create_button_goals_tab.show()
+        else:
+            self.scrollable_frame_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
+            for goal_widget in self.__goals_widgets:
+                goal_widget.remove_all()
+            self.__goals_widgets = []
+            for i in range(len(self.goals_list)):
+                goal_frame = GojectEditFrame(master=self.scrollable_frame_1.scrollable_canvas, toplevelwindow=self, row=i, 
+                                            id=self.goals_list[i].id, name=self.goals_list[i].name, status=self.goals_list[i].status, 
+                                            topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date)
+                self.__goals_widgets.append(goal_frame)
+
+        if len(self.projects_list) == 0:
+            self.scrollable_frame_2.grid_forget()
+            self.create_button_projects_tab.show()
+        else:
+            self.scrollable_frame_2.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
+            for project_widget in self.__projects_widgets:
+                project_widget.remove_all()
+            self.__projects_widgets = []
+            for i in range(len(self.projects_list)):
+                project_frame = GojectEditFrame(master=self.scrollable_frame_2.scrollable_canvas,toplevelwindow=self, row=i, 
+                                                id=self.projects_list[i].id, name=self.projects_list[i].name, status=self.projects_list[i].status, 
+                                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date)
+                self.__projects_widgets.append(project_frame)
 
 class ProcessDataWindow(customtkinter.CTkToplevel):
     def __init__(self, *args, main_window, data, **kwargs):

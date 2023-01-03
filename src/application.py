@@ -120,11 +120,11 @@ class Application(ctk.CTk):
         self.long_log_spinbox.set(self.__long_log_timer)
     
     def draw_gojects_selection_window(self):
-        self.gojects_selection_window = GojectSelectWindow(main_window=self, projects_list=self.__settings_manager.projects, goals_list=self.__settings_manager.goals)
+        self.gojects_selection_window = GojectSelectWindow(main_window=self)
         pass
 
     def draw_gojects_edit_window(self):
-        self.gojects_edit_window = GojectEditWindow(main_window=self, projects_list=self.__settings_manager.projects, goals_list=self.__settings_manager.goals)
+        self.gojects_edit_window = GojectEditWindow(main_window=self)
 
     def draw_process_data_window(self):
         self.process_data_window = ProcessDataWindow(main_window=self, data = "hi")

@@ -64,6 +64,9 @@ This software is currently a work in progress. The current version is capable of
 <summary>Version 1.2.0 Features</summary>
 
 - [ ] Execution by executable
+- [ ] Code optimization:
+  - [ ] CRUD functions optimizations of GojectEditWindow class
+  - [ ] Reimplementation of top level windows and Gojects widgets with inheretance and abstract classes
 - [ ] Gojects:
   - [ ] Add attribute of parent/child goject
   - [ ] Create visual representation of parent/child goject (as a pathway visualizer)

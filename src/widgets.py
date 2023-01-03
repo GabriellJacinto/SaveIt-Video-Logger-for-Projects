@@ -6,17 +6,14 @@ from src.config import COLORS, TOPICS, MAIN_WINDOW_NAME
 
 class CreateGojectButton(customtkinter.CTkFrame):
     def __init__(self, *args, master, toplevelwindow, width=200, **kwargs):
-        self.toplevelwindow = toplevelwindow
         super().__init__(*args, master=master, **kwargs)
+        self.toplevelwindow = toplevelwindow
+        self.visible = False
+
         self.bottom_frame = customtkinter.CTkFrame(master, width=width)
-        self.bottom_frame.grid(row=0, column=0, columnspan = 2, pady=(5, 0))
-        self.bottom_frame.grid_columnconfigure(0,weight=0)
-        self.bottom_frame.grid_columnconfigure((1,2),weight=0)
-        self.bottom_frame.grid_rowconfigure((0, 1, 2, 3), weight=0)
         
         self.create_button = customtkinter.CTkButton(master=self.bottom_frame, text="New Goject", fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.create_button_press)
-        self.create_button.grid(row=0, column=1, padx=(5, 5), pady=(5, 5), sticky="nswe")
-
+    
         self.name_entry = customtkinter.CTkEntry(self.bottom_frame, placeholder_text="Name")
         self.status_option = customtkinter.CTkOptionMenu(self.bottom_frame, dynamic_resizing=False, values=["Backlog", "In Progress", "Completed"])
         self.type_option = customtkinter.CTkOptionMenu(self.bottom_frame, dynamic_resizing=False,values=["Goal", "Project"])
@@ -27,6 +24,24 @@ class CreateGojectButton(customtkinter.CTkFrame):
         self.topics_option.set("Topic")
         self.status_option.set("Status")
         self.type_option.set("Type")    
+
+    def show(self):
+        self.bottom_frame.grid(row=0, column=0, columnspan = 2, pady=(5, 0))
+        self.bottom_frame.grid_columnconfigure(0,weight=0)
+        self.bottom_frame.grid_columnconfigure((1,2),weight=0)
+        self.bottom_frame.grid_rowconfigure((0, 1, 2, 3), weight=0)
+        self.create_button.grid(row=0, column=1, padx=(5, 5), pady=(5, 5), sticky="nswe")
+        self.visible = True
+
+    def remove_all(self):
+        self.bottom_frame.grid_forget()
+        self.create_button.grid_forget()
+        self.name_entry.grid_forget()
+        self.topics_option.grid_forget()
+        self.date_entry.grid_forget()
+        self.status_option.grid_forget()
+        self.save_button.grid_forget()
+        self.visible = False
 
     def create_button_press(self):
         self.name_entry.grid(row=1, column=0, columnspan=3, padx=(5, 5), pady=(5, 5), sticky="nsew")
@@ -44,6 +59,7 @@ class CreateGojectButton(customtkinter.CTkFrame):
         due_date = self.date_entry.get()
 
         self.toplevelwindow.main_window.settings_manager.create_goject(name, type, status, topic, due_date)
+        self.toplevelwindow.update_widgets_creation(type)
         
         self.name_entry.delete(0,len(name))
         self.date_entry.delete(0,len(due_date))
@@ -82,24 +98,40 @@ class GojectEditFrame(customtkinter.CTkFrame):
         self.frame = customtkinter.CTkFrame(self.master, width=width, fg_color="transparent")
         self.frame.grid(row=row, column=0, pady=(5, 0))
         self.frame.grid_columnconfigure(0,weight=1)
-        self.frame.grid_columnconfigure((1,2,3),weight=0)
-        self.frame.grid_rowconfigure((0, 1, 2), weight=0)
+        self.frame.grid_columnconfigure(1,weight=0)
+        self.frame.grid_rowconfigure((0, 1, 2, 3), weight=0)
         
-        self.bullet_point = customtkinter.CTkRadioButton(self.frame, text="{} ({})".format(self.name, status), font = customtkinter.CTkFont(weight="bold"), text_color=COLORS[status],command=self.bullet_point_select)
+        self.switch = customtkinter.CTkSwitch(self.frame, text="{} ({})".format(self.name, status), font = customtkinter.CTkFont(weight="bold"), text_color=COLORS[status],command=self.switch_select)
         self.topic_date_label = customtkinter.CTkLabel(self.frame, text="{} \t {}".format(topic, due_date), font = customtkinter.CTkFont(size = 10, slant="italic"))        
         self.edit_name_button = customtkinter.CTkButton(self.frame, border_width=2, text="Rename", command=self.edit_name_button_press)
         self.status_option = customtkinter.CTkOptionMenu(self.frame, dynamic_resizing=False, values=["Backlog", "In Progress", "Completed"], command=self.edit_status_button_press)
         self.edit_date_button = customtkinter.CTkButton(self.frame, border_width=2, text="Due Date", command=self.edit_date_button_press)
         self.delete_button = customtkinter.CTkButton(self.frame, border_width=2, text="Delete", command=self.delete_button_press, fg_color="red")
 
-        self.bullet_point.grid(row=0, column=0, columnspan=4, pady=(5, 0))   
-        self.topic_date_label.grid(row=1, column=0, columnspan=4, pady=(5, 0)) 
+        self.switch.grid(row=0, column=0, columnspan=4, pady=(5, 0), padx=(5, 5))   
+        self.topic_date_label.grid(row=1, column=0, columnspan=4, pady=(5, 0),padx=(5, 5)) 
 
-    def bullet_point_select(self):
-        self.edit_name_button.grid(row=2, column=0, pady=(5, 0))
-        self.status_option.grid(row=2, column=1, pady=(5, 0))
-        self.edit_date_button.grid(row=2, column=2, pady=(5, 0))
-        self.delete_button.grid(row=2, column=3, pady=(5, 0))
+    def remove_all(self):
+        self.frame.grid_forget()
+        self.switch.grid_forget()
+        self.topic_date_label.grid_forget()
+        self.edit_name_button.grid_forget()
+        self.status_option.grid_forget()
+        self.edit_date_button.grid_forget()
+        self.delete_button.grid_forget()
+
+    def switch_select(self):
+        value = self.switch.get()
+        if(value):
+            self.edit_name_button.grid(row=2, column=0, pady=(5, 0))
+            self.status_option.grid(row=2, column=1, pady=(5, 0))
+            self.edit_date_button.grid(row=3, column=0, pady=(5, 0))
+            self.delete_button.grid(row=3, column=1, pady=(5, 0))
+        else:
+            self.edit_name_button.grid_forget()
+            self.status_option.grid_forget()
+            self.edit_date_button.grid_forget()
+            self.delete_button.grid_forget()
 
     def edit_date_button_press(self):
         dialog = customtkinter.CTkInputDialog(text="Type a new Due Date (D/M/YYYY):", title="{} - Edit Due Date".format(MAIN_WINDOW_NAME))
@@ -112,7 +144,7 @@ class GojectEditFrame(customtkinter.CTkFrame):
 
     def edit_status_button_press(self, new_status):
         self.toplevelwindow.main_window.settings_manager.alter_goject(self.id, "status", new_status)
-        self.bullet_point.configure(text="{} ({})".format(self.name, new_status), text_color=COLORS[new_status])
+        self.switch.configure(text="{} ({})".format(self.name, new_status), text_color=COLORS[new_status])
     
     def edit_name_button_press(self):
         dialog = customtkinter.CTkInputDialog(text="Type a new Name:", title="{} - Edit Name".format(MAIN_WINDOW_NAME))
@@ -121,25 +153,16 @@ class GojectEditFrame(customtkinter.CTkFrame):
             print("Valor Invalido")
         else:
             self.toplevelwindow.main_window.settings_manager.alter_goject(self.id, "name", value)
-            self.bullet_point.configure(text="{} ({})".format(value, self.status))
+            self.switch.configure(text="{} ({})".format(value, self.status))
 
     def delete_button_press(self):
         dialog = customtkinter.CTkInputDialog(text="Are you sure? (Y/n)", title="{} - Delete Goject".format(MAIN_WINDOW_NAME))
         value = dialog.get_input()
         if value.upper() == "Y":
             self.toplevelwindow.main_window.settings_manager.delete_goject(self.id)
-            #self.grid_remove()
-            self.toplevelwindow.verify_update_widgets_deletion()
+            self.toplevelwindow.update_widgets_deletion()
+            self.remove_all()
 
-class GojectSwitch(customtkinter.CTkFrame):
-    def __init__(self, *args, master, name: str = "Example", status: str = "Backlog", topic: str = "", due_date: str = "", width: int = 100, height: int = 32, command: Callable = None, **kwargs):
-        super().__init__(*args, master=master, width=width, height=height, **kwargs)
-        self.switch = customtkinter.CTkSwitch(master, text="{} ({})".format(name, status), font = customtkinter.CTkFont(weight="bold"), text_color=COLORS[status], switch_height=18, switch_width=18,)
-        self.status_label = customtkinter.CTkLabel(master, text="{} \t {}".format(topic, due_date), font = customtkinter.CTkFont(size = 10, slant="italic"))        
-        
-        self.switch.pack(anchor=tk.W)   
-        self.status_label.pack(anchor=tk.E)  
-    
 class GojectCheckbox(customtkinter.CTkFrame):
     def __init__(self, *args, master, name: str = "Example", status: str = "Backlog", type:str = "Goal", width: int = 100, height: int = 32, command: Callable = None, **kwargs):
         super().__init__(*args, master=master, width=width, height=height, **kwargs)
