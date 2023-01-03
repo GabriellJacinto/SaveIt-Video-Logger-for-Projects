@@ -34,7 +34,7 @@ Lauching the application:
 ```
 python3 main.py
 ```
-## Current Version: 1.0.0
+## Current Version: 1.0.3
 
 This software is currently a work in progress. The current version is capable of:
 
@@ -70,6 +70,8 @@ This software is currently a work in progress. The current version is capable of
 - [ ] Gojects:
   - [ ] Add attribute of parent/child goject
   - [ ] Create visual representation of parent/child goject (as a pathway visualizer)
+- [ ] Video Player:
+  - [ ] Integration with [mindfulness at the computer](https://gitlab.com/mindfulness-at-the-computer/mindfulness-at-the-computer) to play animations
 - [ ] Recording:
   - [ ] Show recording on the main menu (currently opens up another window)
     - [ ] Create progress bar for the whole duration of the log
@@ -97,7 +99,7 @@ This software is currently a work in progress. The current version is capable of
 - [ ] Video Player:
   - [ ] Create class to play recording on the main menu:
     - [ ] Select and play older logs
-    - [ ] Play other videos
+    - [ ] Play any video
 - [ ] Notion API integration
   - [ ] Import
   - [ ] Edit and Save
