@@ -87,7 +87,7 @@ class ScrollableFrame(customtkinter.CTkFrame):
         scrollbar.grid(row=0, column=1, sticky="ns")
 
 class GojectEditFrame(customtkinter.CTkFrame):
-    def __init__(self, *args, master, toplevelwindow, row, id, name: str = "Example", status: str = "Backlog", topic: str = "", due_date: str = "", width: int = 200, height: int = 32, foreground_color="transparent", **kwargs):
+    def __init__(self, *args, master, toplevelwindow, row, id, name: str = "Example", status: str = "Backlog", topic: str = "", due_date: str = "", width: int = 200, height: int = 32, foreground_color="transparent", command = None, **kwargs):
         super().__init__(*args, master=master, width=width, height=height, fg_color=foreground_color, **kwargs)
         self.toplevelwindow = toplevelwindow
         self.id = id
@@ -95,12 +95,14 @@ class GojectEditFrame(customtkinter.CTkFrame):
         self.status = status
         self.topic = topic
         
+        self.command = self.switch_select if command == "edit" else self.turn_on_recording_button
+
         self.grid(row=row, column=0, padx=(10, 10), pady=(5, 10), sticky="w")
         self.grid_columnconfigure(0,weight=1)
         self.grid_columnconfigure(1,weight=0)
         self.grid_rowconfigure((0, 1, 2, 3), weight=0)
-        
-        self.switch = customtkinter.CTkSwitch(self, text="{} ({})".format(self.name, status), font = customtkinter.CTkFont(weight="bold"), text_color=COLORS[status],command=self.switch_select)
+
+        self.switch = customtkinter.CTkSwitch(self, text="{} ({})".format(self.name, status), font = customtkinter.CTkFont(weight="bold"), text_color=COLORS[status],command=self.command)
         self.topic_date_label = customtkinter.CTkLabel(self, text="{} \t {}".format(topic, due_date), font = customtkinter.CTkFont(size = 10))        
         self.edit_name_button = customtkinter.CTkButton(self, border_width=2, text="Rename", command=self.edit_name_button_press)
         self.status_option = customtkinter.CTkOptionMenu(self, dynamic_resizing=False, values=["Backlog", "In Progress", "Completed"], command=self.edit_status_button_press)
@@ -109,15 +111,33 @@ class GojectEditFrame(customtkinter.CTkFrame):
 
         self.switch.grid(row=0, column=0, columnspan=4, pady=(5, 0), padx=(5, 5), sticky="w")   
         self.topic_date_label.grid(row=1, column=0, columnspan=4, pady=(5, 0),padx=(5, 5), sticky="w") 
+    
+    def turn_on_recording_button(self):
+        value_on = self.switch.get()
+        if value_on and len(self.toplevelwindow.selected_gojects_id):
+            self.toplevelwindow.any_abled = True
+        
+        if value_on:
+            self.toplevelwindow.selected_gojects_id.append(self.id)
+        else:
+            self.toplevelwindow.selected_gojects_id.remove(self.id)
+        
+        if len(self.toplevelwindow.selected_gojects_id) == 0:
+            self.toplevelwindow.any_abled = False
+
+        if value_on or self.toplevelwindow.any_abled:
+            self.toplevelwindow.record_button.configure(state="normal", fg_color="green")
+        else:
+            self.toplevelwindow.record_button.configure(state="disabled", fg_color="transparent")
 
     def remove_all(self):
-        self.grid_forget()
-        self.switch.grid_forget()
-        self.topic_date_label.grid_forget()
-        self.edit_name_button.grid_forget()
-        self.status_option.grid_forget()
-        self.edit_date_button.grid_forget()
-        self.delete_button.grid_forget()
+        #self.switch.grid_remove()
+        #self.topic_date_label.grid_remove()
+        #self.edit_name_button.grid_remove()
+        #self.status_option.grid_remove()
+        #self.edit_date_button.grid_remove()
+        #self.delete_button.grid_remove()
+        self.destroy()
 
     def switch_select(self):
         value = self.switch.get()
@@ -166,10 +186,12 @@ class GojectCheckbox(customtkinter.CTkFrame):
     def __init__(self, *args, master, name: str = "Example", status: str = "Backlog", type:str = "Goal", width: int = 100, height: int = 32, command: Callable = None, **kwargs):
         super().__init__(*args, master=master, width=width, height=height, **kwargs)
         self.type = type
+        self.name = name
+        self.status = status
 
-        self.checkbox = customtkinter.CTkCheckBox(master, text="{}".format(name), checkbox_height=18, checkbox_width=18, font = customtkinter.CTkFont(weight="bold"), border_width=2, state=tk.DISABLED)
+        self.checkbox = customtkinter.CTkCheckBox(master, text="{}".format(self.name), checkbox_height=18, checkbox_width=18, font = customtkinter.CTkFont(weight="bold"), border_width=2, state=tk.DISABLED)
         self.seg_button = customtkinter.CTkSegmentedButton(master,values=["Goal", "Project"], command = self.reset_selection)
-        self.status_label = customtkinter.CTkLabel(master, text="Status: {}".format(status), font = customtkinter.CTkFont(size = 10, slant="italic"), text_color=COLORS[status])        
+        self.status_label = customtkinter.CTkLabel(master, text="Status: {}".format(self.status), font = customtkinter.CTkFont(size = 10, slant="italic"), text_color=COLORS[status])        
         self.progressbar = customtkinter.CTkProgressBar(master, progress_color = "green")
         self.blank_label = customtkinter.CTkLabel(master, text=" ")
 
@@ -182,6 +204,15 @@ class GojectCheckbox(customtkinter.CTkFrame):
         self.progressbar.pack(anchor=tk.CENTER)
         self.blank_label.pack(anchor=tk.W)
 
+    def delete(self):
+        self.checkbox.destroy()
+        self.seg_button.destroy()
+        self.status_label.destroy()
+        self.progressbar.destroy()
+        self.blank_label.destroy()
+        self.destroy()
+
+        
     def set_checkbox_value(self):
         self.checkbox.select()
 
@@ -192,9 +223,11 @@ class GojectCheckbox(customtkinter.CTkFrame):
         self.seg_button.set(self.type)
 
 class Spinbox(customtkinter.CTkFrame):
-    def __init__(self, *args, width: int = 100, height: int = 32, step_size: Union[int, float] = 1, command: Callable = None, **kwargs):
+    def __init__(self, *args, width: int = 100, height: int = 32, step_size: Union[int, float] = 1, max_value, min_value, command: Callable = None, **kwargs):
         super().__init__(*args, width=width, height=height, **kwargs)
 
+        self.min_value = float(min_value)
+        self.max_value = float(max_value)
         self.step_size = step_size
         self.command = command
 
@@ -204,10 +237,10 @@ class Spinbox(customtkinter.CTkFrame):
         self.grid_columnconfigure(1, weight=1)  # entry expands
 
         self.subtract_button = customtkinter.CTkButton(self, text="-", width=height-6, height=height-6,
-                                                       command=self.subtract_button_callback)
+                                                       command=self.subtract_button_callback, state="disabled")
         self.subtract_button.grid(row=0, column=0, padx=(3, 0), pady=3)
 
-        self.entry = customtkinter.CTkEntry(self, width=width-(2*height), height=height-6, border_width=0)
+        self.entry = customtkinter.CTkEntry(self, width=width-(2*height), height=height-6, border_width=0, )
         self.entry.grid(row=0, column=1, columnspan=1, padx=3, pady=3, sticky="ew")
 
         self.add_button = customtkinter.CTkButton(self, text="+", width=height-6, height=height-6,
@@ -215,15 +248,22 @@ class Spinbox(customtkinter.CTkFrame):
         self.add_button.grid(row=0, column=2, padx=(0, 3), pady=3)
 
         # default value
-        self.entry.insert(0, "0.0")
+        self.set(self.min_value)
 
     def add_button_callback(self):
         if self.command is not None:
             self.command()
         try:
             value = float(self.entry.get()) + self.step_size
-            self.entry.delete(0, "end")
-            self.entry.insert(0, value)
+            if value >= float(self.max_value) or value <= float(self.min_value):
+                self.add_button.configure(state="disabled")
+                self.subtract_button.configure(state="normal")
+                self.set(self.max_value)
+            else:
+                self.add_button.configure(state="normal")
+                self.subtract_button.configure(state="normal")
+                self.entry.delete(0, "end")
+                self.entry.insert(0, value)
         except ValueError:
             return
 
@@ -232,14 +272,27 @@ class Spinbox(customtkinter.CTkFrame):
             self.command()
         try:
             value = float(self.entry.get()) - self.step_size
-            self.entry.delete(0, "end")
-            self.entry.insert(0, value)
+            if value <= float(self.min_value) or value >= float(self.max_value):
+                self.subtract_button.configure(state="disabled")
+                self.add_button.configure(state="normal")
+                self.set(self.min_value)
+            else:
+                self.subtract_button.configure(state="normal")
+                self.add_button.configure(state="normal")
+                self.entry.delete(0, "end")
+                self.entry.insert(0, value)
         except ValueError:
             return
 
     def get(self) -> Union[float, None]:
         try:
-            return float(self.entry.get())
+            value = float(self.entry.get())
+            if value < self.min_value or value > self.max_value:
+                print("Valor invalido! Configurando para {} s".format(self.min_value))
+                self.set(self.min_value)
+                self.subtract_button.configure(state="disabled")
+                value = self.min_value
+            return value
         except ValueError:
             return None
 

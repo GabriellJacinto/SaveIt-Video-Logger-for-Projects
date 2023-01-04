@@ -27,9 +27,6 @@ class Application(ctk.CTk):
         self.__file_manager = FileManager()
         self.__settings_manager = SettingsManager(self.__file_manager)
 
-        self.__quick_log_timer = DEFAULT_QUICKLOG_TIME
-        self.__long_log_timer = DEFAULT_LONGLOG_TIME
-
     @property
     def settings_manager(self):
         return self.__settings_manager
@@ -75,7 +72,7 @@ class Application(ctk.CTk):
         # Add a PhotoImage to the Canvas
         #self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
         # Button that lets the user blur the image
-        self.record_button=ctk.CTkButton(self.center_frame, text="Record", state="disabled")
+        self.record_button=ctk.CTkButton(self.center_frame, text="Record", state="disabled", fg_color="blue")
         self.record_button.grid(row=1, padx=20, pady=10)
 
         self.video_progressbar = ctk.CTkProgressBar(self.center_frame, progress_color = "blue", width=600)
@@ -91,74 +88,123 @@ class Application(ctk.CTk):
         self.title_label = ctk.CTkLabel(self.left_sidebar_frame, text="Personal Video Logger", font=ctk.CTkFont(size=20, weight="bold"))
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         #Quick Log Button
-        self.quicklog_button = ctk.CTkButton(self.left_sidebar_frame, command=self.quick_log_button_press, text = "Quick Log")
+        self.quicklog_button = ctk.CTkButton(self.left_sidebar_frame, command=lambda:self.draw_gojects_selection_window("quick_log"), text = "Quick Log")
         self.quicklog_button.grid(row=1, column=0, padx=20, pady=10)
         #Long Log Button
-        self.long_log_button = ctk.CTkButton(self.left_sidebar_frame, command=self.long_log_button_press, text="Long Log")
+        self.long_log_button = ctk.CTkButton(self.left_sidebar_frame, command=lambda:self.draw_gojects_selection_window("long_log"), text="Long Log")
         self.long_log_button.grid(row=2, column=0, padx=20, pady=10)
         #Config Gojects Button
-        self.config_gojects_button = ctk.CTkButton(self.left_sidebar_frame, command=self.settings_gojects_button_press, text = "Gojects Configuration")
+        self.config_gojects_button = ctk.CTkButton(self.left_sidebar_frame, command=self.draw_gojects_edit_window, text = "Gojects Configuration")
         self.config_gojects_button.grid(row=3, column=0, padx=20, pady=10)
         #Process Data Button
-        self.process_data_button = ctk.CTkButton(self.left_sidebar_frame, command=self.process_data_button_press, text="Process Data", state="disabled")
+        self.process_data_button = ctk.CTkButton(self.left_sidebar_frame, command=self.draw_process_data_window, text="Process Data", state="disabled")
         self.process_data_button.grid(row=4, column=0, padx=20, pady=10)
         #Quick Log Duration Spinbox
 
         self.quick_log_label = ctk.CTkLabel(self.left_sidebar_frame, text="Quick Log Duration", anchor="w")
         self.quick_log_label.grid(row=6, column=0, padx=20, pady=(10, 0))
 
-        self.quick_log_spinbox = Spinbox(self.left_sidebar_frame, width=120)
+        self.quick_log_spinbox = Spinbox(self.left_sidebar_frame, width=120, min_value=DEFAULT_MIN_QUICKLOG_TIME, max_value=DEFAULT_MAX_QUICKLOG_TIME)
         self.quick_log_spinbox.grid(row=7, column=0, padx=20, pady=(10, 10))
-        self.quick_log_spinbox.set(self.__quick_log_timer)
 
         #Long Log Duration Spinbox
         self.long_log_label = ctk.CTkLabel(self.left_sidebar_frame, text="Long Log Duration", anchor="w")
         self.long_log_label.grid(row=8, column=0, padx=20, pady=(10, 0))
 
-        self.long_log_spinbox = Spinbox(self.left_sidebar_frame, step_size=0.25, width=120)
+        self.long_log_spinbox = Spinbox(self.left_sidebar_frame, step_size=15, width=120, min_value=DEFAULT_MIN_LONGLOG_TIME, max_value=DEFAULT_MAX_LONGLOG_TIME)
         self.long_log_spinbox.grid(row=9, column=0, padx=20, pady=(10, 10))
-        self.long_log_spinbox.set(self.__long_log_timer)
     
-    def draw_gojects_selection_window(self):
-        self.gojects_selection_window = GojectSelectWindow(main_window=self)
-        pass
+    def draw_gojects_selection_window(self, record_type: str):
+        self.gojects_selection_window = GojectSelectWindow(main_window=self, record_type=record_type)
 
     def draw_gojects_edit_window(self):
         self.gojects_edit_window = GojectEditWindow(main_window=self)
 
     def draw_process_data_window(self):
-        self.process_data_window = ProcessDataWindow(main_window=self, data = "hi")
+        self.process_data_window = ProcessDataWindow(main_window=self, data = "To implement")
 
-    def select_gojects(self): 
-        selected_gojects = []
-        self.draw_gojects_selection_window()
+    def draw_selected_gojects(self, selected_gojects_id):
         selected_gojects_widgets = []
-        for i in range(self.__settings_manager.goject_counter):
-            goject_checkbox = GojectCheckbox(master=self.scrollable_frame.scrollable_canvas, name=self.__settings_manager.goject_buffer[i].name, status=self.__settings_manager.goject_buffer[i].status, type=self.__settings_manager.goject_buffer[i].type)
+        for id in selected_gojects_id:
+            goject_checkbox = GojectCheckbox(master=self.scrollable_frame.scrollable_canvas,name=self.__settings_manager.goject_buffer[id].name, status=self.__settings_manager.goject_buffer[id].status, type=self.__settings_manager.goject_buffer[id].type)
             selected_gojects_widgets.append(goject_checkbox)
         self.update()
-        return selected_gojects
-
-    def quick_log_button_press(self):
-        gojects_selected = self.select_gojects()
-        #TO DO: when done seleting, show prelude for 45s (video or animation)
-        #loop-iterate for each gojects selected. Once done, change the checkbox, progressbar, and videoprgressbar values
-        self.record_and_save(self.quick_log_spinbox.get(), "Quick_Logs")
-        #clear the right_sidebar after {10 s} and reset videoprogress bar
-        
-    def long_log_button_press(self):
-        gojects_selected = self.select_gojects()
-        #TO DO: when done selecting, show prelude for 15s (video)
-        #loop-iterate for each gojects selected. Once done, change the checkbox, progressbar, and videoprgressbar values
-        self.record_and_save(self.long_log_spinbox.get(), "Long_Logs")
-        #clear the right_sidebar after {10 s} and reset videoprogress bar
-
-    def settings_gojects_button_press(self):
-        self.draw_gojects_edit_window()
+        return selected_gojects_widgets
     
-    def process_data_button_press(self):
-        self.draw_process_data_window()
+    def start_quick_log(self, selected_gojects):
+        current_goject_checkbox = self.draw_selected_gojects(selected_gojects)
+        number_of_gojects = len(current_goject_checkbox)
+        ratio_number = 1/len(current_goject_checkbox)
+        timer = self.quick_log_spinbox.get()
+        
+        #Updating UI
+        self.record_button.configure(text="Recording for {} s...".format(timer*number_of_gojects), fg_color="red")
+        self.update()
+        
+        #TO DO: when done seleting, show prelude for 45s (video or animation)
+        for checkbox in current_goject_checkbox:
+            
+            #Updating UI
+            checkbox.set_progressbar_value()
+            checkbox.set_checkbox_value()
+            
+            #Recording
+            name = "{}-{}".format(checkbox.status, datetime.today().strftime('%Y-%m-%d_%H-%M-%S'))
+            folder = checkbox.name.replace(" ", "_")
+            self.record_and_save(timer, type_recording="Quick_Logs", folder_name=folder, file_name=name)
+            
+            #Updating UI
+            print("Done recording. Saving {} in {} folder".format(name,folder))
+            self.video_progressbar.set(ratio_number)
+            ratio_number += ratio_number
+            self.update()
 
+        #Updating and Cleaning UI 
+        self.record_button.configure(text="Done!", fg_color="green")
+        self.update()
+        time.sleep(WAIT_TO_CLEAN_TIME)
+        self.video_progressbar.set(0)
+        for checkbox in current_goject_checkbox:
+            checkbox.delete()
+        self.record_button.configure(text="Record", fg_color="blue")
+        
+    def start_long_log(self, selected_gojects):
+        current_goject_checkbox = self.draw_selected_gojects(selected_gojects)
+        number_of_gojects = len(current_goject_checkbox)
+        ratio_number = 1/len(current_goject_checkbox)
+        timer = self.long_log_spinbox.get()
+        
+        #Updating UI
+        self.record_button.configure(text="Recording for {} s...".format(timer*number_of_gojects), fg_color="red")
+        self.update()
+
+        #TO DO: when done selecting, show prelude for 15s (video)
+        for checkbox in current_goject_checkbox:
+            
+            #Updating UI
+            checkbox.set_progressbar_value()
+            checkbox.set_checkbox_value()
+            
+            #Recording
+            name = "{}-{}".format(checkbox.status, datetime.today().strftime('%Y-%m-%d_%H-%M-%S'))
+            folder = checkbox.name.replace(" ", "_")
+            self.record_and_save(timer, type_recording="Long_Logs", folder_name=folder, file_name=name)
+            
+            #Updating UI
+            print("Done recording. Saving {} in {} folder".format(name,folder))
+            self.video_progressbar.set(ratio_number)
+            ratio_number += ratio_number
+            self.update()
+        
+        #Updating and Cleaning UI
+        self.record_button.configure(text="Done!", fg_color="green")
+        self.update()
+        time.sleep(WAIT_TO_CLEAN_TIME)
+        self.video_progressbar.set(0)
+        for checkbox in current_goject_checkbox:
+            checkbox.delete()
+        self.record_button.configure(text="Record", fg_color="blue")
+    
     def record_and_save(self, duration, type_recording="Undefined", folder_name="Type-Untitled", file_name=datetime.today().strftime('%Y-%m-%d_%H-%M-%S')):
         self.__save_dir = self.__file_manager.file_manager(type_recording,folder_name)
         

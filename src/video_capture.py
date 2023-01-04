@@ -49,7 +49,7 @@ class VideoRecorder():
 
     def stop(self):
         "Finishes the video recording therefore the thread too"
-        print("Video done recording.", self.__open)
+        print("Video done capturing.", self.__open)
         if self.__open:
             print("1")
             self.__open=False
@@ -59,6 +59,7 @@ class VideoRecorder():
             self.__video_cap.release()
             print("4")
             cv2.destroyAllWindows()
+            print("5")
             cv2.waitKey(1)
             print("Processing...")
 

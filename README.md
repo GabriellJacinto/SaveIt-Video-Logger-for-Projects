@@ -34,21 +34,21 @@ Lauching the application:
 ```
 python3 main.py
 ```
-## Current Version: 1.0.3
+## Current Version: 1.1.0
 
-This software is currently a work in progress. The current version is capable of:
+This software is on realese 1.1. The current version is capable of:
 
 <details open>
-<summary>Version 1.1.0 Features</summary>
+<summary>Version 1.1.* Features</summary>
 
 - [x] Execution by command line (see [Installation](#🚀-Installing-SaveIt:-Personal-Video-Logger))
-- [ ] Manage Goals and Projects:
+- [x] Manage Goals and Projects:
   - [x] Edit Gojects Window
     - [x] Create Gojects
     - [x] Delete Gojects
     - [x] Edit Gojects
     - [x] Save Gojects
-  - [ ] Select Gojects to record
+  - [X] Select Gojects to record
     - [x] Create custom widget to aggragate information of recording progress
     - [x] Show custom widgets on the right sidebar
 - [x] Recording:
@@ -61,7 +61,7 @@ This software is currently a work in progress. The current version is capable of
 </details>
 
 <details>
-<summary>Version 1.2.0 Features</summary>
+<summary>Version 1.2.* Features</summary>
 
 - [ ] Execution by executable
 - [ ] Code optimization:
@@ -73,6 +73,10 @@ This software is currently a work in progress. The current version is capable of
 - [ ] Video Player:
   - [ ] Integration with [mindfulness at the computer](https://gitlab.com/mindfulness-at-the-computer/mindfulness-at-the-computer) to play animations
 - [ ] Recording:
+  - [ ] Add Recording info on the screen while recording and on the saved file
+  - [ ] Select devices on the main page
+    - [] Camera
+    - [] Microphone 
   - [ ] Show recording on the main menu (currently opens up another window)
     - [ ] Create progress bar for the whole duration of the log
     - [ ] Create button to stop current log and go to next one
@@ -94,7 +98,7 @@ This software is currently a work in progress. The current version is capable of
 
 
 <details>
-<summary>Version 1.3.0 Features</summary>
+<summary>Version 1.3.* Features</summary>
 
 - [ ] Video Player:
   - [ ] Create class to play recording on the main menu:

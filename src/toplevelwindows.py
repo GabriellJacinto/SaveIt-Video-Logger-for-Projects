@@ -6,54 +6,72 @@ from src.widgets import CreateGojectButton, ScrollableFrame, GojectEditFrame
 from src.config import *
 
 class GojectSelectWindow(customtkinter.CTkToplevel):
-    def __init__(self, *args, main_window, **kwargs):
+    def __init__(self, *args, main_window, record_type, **kwargs):
         super().__init__(*args, **kwargs)
         self.__main_window = main_window
-        self.projects_list = self.__main_window.settings_manager.projects
-        self.goals_list = self.__main_window.settings_manager.goals
+        self.selected_gojects_id = []
         self.title(GOJECT_SELECTION_WINDOW_NAME)
+        self.any_abled = False
+        
         self.geometry("{}x{}".format(GOJECT_SELECTION_WINDOW_WIDTH,GOJECT_SELECTION_WINDOW_HEIGHT))
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=0)
 
+        #Create Tab
+        self.tabview = customtkinter.CTkTabview(self, width=550, height=600)
+        self.tabview.grid(row=0, column = 0, columnspan=3, sticky="n")
+        self.tabview.add("Goals")
+        self.tabview.add("Projects")
+        self.tabview.tab("Goals").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
+        self.tabview.tab("Projects").grid_columnconfigure(0, weight=1)
+
+        self.scrollable_frame_1 = ScrollableFrame(self.tabview.tab("Goals"), width=500)
+        self.scrollable_frame_2 = ScrollableFrame(self.tabview.tab("Projects"), width=500)
+        self.empty_goals_message = customtkinter.CTkLabel(self.tabview.tab("Goals"), text="There are no available options. \n Please go to 'Gojects Configuration' to add new Goals", font = customtkinter.CTkFont(weight="bold"), text_color="red")
+        self.empty_projects_message = customtkinter.CTkLabel(self.tabview.tab("Projects"), text="There are no available options. \n Please go to 'Gojects Configuration' to add new Projects", font = customtkinter.CTkFont(weight="bold"), text_color="red")
+
+        self.record_button = customtkinter.CTkButton(self, border_width=2, text="Start Recording", command=lambda: self.start_recording(record_type), state="disabled", fg_color="transparent", text_color_disabled=("gray10", "#DCE4EE"))
+
+        self.load_widgets()
+          
     @property
     def main_window(self):
         return self.__main_window
 
-        # create tabview
-        """
-        self.tabview = customtkinter.CTkTabview(self, width=250)
-        self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        self.tabview.add("CTkTabview")
-        self.tabview.add("Tab 2")
-        self.tabview.add("Tab 3")
-        self.tabview.tab("CTkTabview").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
-        self.tabview.tab("Tab 2").grid_columnconfigure(0, weight=1)
+    def load_widgets(self):
+        self.record_button.grid(row=1, column = 1, pady = (10,10))
 
-        self.optionmenu_1 = customtkinter.CTkOptionMenu(self.tabview.tab("CTkTabview"), dynamic_resizing=False,
-                                                        values=["Value 1", "Value 2", "Value Long Long Long"])
-        self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.combobox_1 = customtkinter.CTkComboBox(self.tabview.tab("CTkTabview"),
-                                                    values=["Value 1", "Value 2", "Value Long....."])
-        self.combobox_1.grid(row=1, column=0, padx=20, pady=(10, 10))
-        self.string_input_button = customtkinter.CTkButton(self.tabview.tab("CTkTabview"), text="Open CTkInputDialog",
-                                                           command=self.open_input_dialog_event)
-        self.string_input_button.grid(row=2, column=0, padx=20, pady=(10, 10))
-        self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Tab 2"), text="CTkLabel on Tab 2")
-        self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)"""
+        self.projects_list = self.__main_window.settings_manager.projects
+        self.goals_list = self.__main_window.settings_manager.goals
 
-"""
-        self.select_gojects_label = ctk.CTkLabel(self.right_sidebar_frame, text="Selected Gojects", font=ctk.CTkFont(size=20, weight="bold"))
-        self.select_gojects_label.grid(row=0, column=2, padx=20, pady=(20, 10))
+        if len(self.goals_list) == 0:
+            self.empty_goals_message.grid()
+        else:
+            self.scrollable_frame_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
+            for i in range(len(self.goals_list)):
+                GojectEditFrame(master=self.scrollable_frame_1.scrollable_canvas, toplevelwindow=self, row=i, 
+                                id=self.goals_list[i].id, name=self.goals_list[i].name, status=self.goals_list[i].status, 
+                                topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date)
+                
+        if len(self.projects_list) == 0:
+            self.empty_projects_message.grid()
+        else:
+            self.scrollable_frame_2.grid(row=0, column=0, padx=(20, 10), pady=(10, 10))
+            for i in range(len(self.projects_list)):
+                GojectEditFrame(master=self.scrollable_frame_2.scrollable_canvas,toplevelwindow=self, row=i, 
+                                id=self.projects_list[i].id, name=self.projects_list[i].name, status=self.projects_list[i].status, 
+                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date)
 
-        # create scrollable frame
-        self.scrollable_frame = ScrollableFrame(self.right_sidebar_frame, width=RIGHT_FRAME_WIDTH)
-        self.scrollable_frame.grid(row=1, column=2, padx=(20, 10), pady=(10, 10))
+    def start_recording(self, record_type):
+        self.withdraw()
+        if record_type == "long_log":
+            self.__main_window.start_long_log(self.selected_gojects_id)
+        elif record_type == "quick_log":
+            self.__main_window.start_quick_log(self.selected_gojects_id)
+        else:
+            print("Invalid recording type {}".format(record_type))
 
-        for i in range(self.__settings_manager.goject_counter):
-            goject_checkbox = GojectCheckbox(master=self.scrollable_frame.scrollable_canvas, name=self.__settings_manager.goject_buffer[i].name, status=self.__settings_manager.goject_buffer[i].status, type=self.__settings_manager.goject_buffer[i].type)
-            selected_gojects_widgets.append(goject_checkbox)
-        self.update()
-"""
-
+        
 class GojectEditWindow(customtkinter.CTkToplevel):
     def __init__(self, *args, main_window, **kwargs):
         super().__init__(*args, **kwargs)
@@ -102,7 +120,7 @@ class GojectEditWindow(customtkinter.CTkToplevel):
             for i in range(len(self.goals_list)):
                 goal_frame = GojectEditFrame(master=self.scrollable_frame_1.scrollable_canvas, toplevelwindow=self, row=i, 
                                             id=self.goals_list[i].id, name=self.goals_list[i].name, status=self.goals_list[i].status, 
-                                            topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date)
+                                            topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date, command="edit")
                 self.__goals_widgets.append(goal_frame)
 
         if len(self.projects_list) == 0:
@@ -112,7 +130,7 @@ class GojectEditWindow(customtkinter.CTkToplevel):
             for i in range(len(self.projects_list)):
                 project_frame = GojectEditFrame(master=self.scrollable_frame_2.scrollable_canvas,toplevelwindow=self, row=i, 
                                                 id=self.projects_list[i].id, name=self.projects_list[i].name, status=self.projects_list[i].status, 
-                                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date)
+                                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date, command="edit")
                 self.__projects_widgets.append(project_frame)
 
     def update_widgets_creation(self, type):
@@ -125,7 +143,7 @@ class GojectEditWindow(customtkinter.CTkToplevel):
             for i in range(len(self.projects_list)):
                 project_frame = GojectEditFrame(master=self.scrollable_frame_2.scrollable_canvas,toplevelwindow=self, row=i, 
                                                 id=self.projects_list[i].id, name=self.projects_list[i].name, status=self.projects_list[i].status, 
-                                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date)
+                                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date, command="edit")
                 self.__projects_widgets.append(project_frame)
         elif type == "Goal":
             self.goals_list = self.__main_window.settings_manager.goals
@@ -136,7 +154,7 @@ class GojectEditWindow(customtkinter.CTkToplevel):
             for i in range(len(self.goals_list)):
                 goal_frame = GojectEditFrame(master=self.scrollable_frame_1.scrollable_canvas, toplevelwindow=self, row=i, 
                                             id=self.goals_list[i].id, name=self.goals_list[i].name, status=self.goals_list[i].status, 
-                                            topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date)
+                                            topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date, command="edit")
                 self.__goals_widgets.append(goal_frame)
         else:
             print("Erro ao processar type '{}' no update de criação do widget".format(type))
@@ -156,7 +174,7 @@ class GojectEditWindow(customtkinter.CTkToplevel):
             for i in range(len(self.goals_list)):
                 goal_frame = GojectEditFrame(master=self.scrollable_frame_1.scrollable_canvas, toplevelwindow=self, row=i, 
                                             id=self.goals_list[i].id, name=self.goals_list[i].name, status=self.goals_list[i].status, 
-                                            topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date)
+                                            topic=self.goals_list[i].topic, due_date=self.goals_list[i].due_date, command="edit")
                 self.__goals_widgets.append(goal_frame)
 
         if len(self.projects_list) == 0:
@@ -170,7 +188,7 @@ class GojectEditWindow(customtkinter.CTkToplevel):
             for i in range(len(self.projects_list)):
                 project_frame = GojectEditFrame(master=self.scrollable_frame_2.scrollable_canvas,toplevelwindow=self, row=i, 
                                                 id=self.projects_list[i].id, name=self.projects_list[i].name, status=self.projects_list[i].status, 
-                                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date)
+                                                topic=self.projects_list[i].topic, due_date=self.projects_list[i].due_date, command="edit")
                 self.__projects_widgets.append(project_frame)
 
 class ProcessDataWindow(customtkinter.CTkToplevel):
