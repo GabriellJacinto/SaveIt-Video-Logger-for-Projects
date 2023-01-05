@@ -34,9 +34,9 @@ Lauching the application:
 ```
 python3 main.py
 ```
-## Current Version: 1.1.0
+## Current Version: 1.2.1
 
-This software is on realese 1.1. The current version is capable of:
+This software is on realese 1.2. The current version is capable of:
 
 <details open>
 <summary>Version 1.1.* Features</summary>
@@ -75,10 +75,10 @@ This software is on realese 1.1. The current version is capable of:
 - [ ] Recording:
   - [ ] Add Recording info on the screen while recording and on the saved file
   - [ ] Select devices on the main page
-    - [] Camera
-    - [] Microphone 
+    - [x] Camera
+    - [ ] Microphone 
   - [ ] Show recording on the main menu (currently opens up another window)
-    - [ ] Create progress bar for the whole duration of the log
+    - [x] Create progress bar for the whole duration of the log
     - [ ] Create button to stop current log and go to next one
     - [ ] Create button to go to next section of current log
     - [ ] Create button to stop recording
