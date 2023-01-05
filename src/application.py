@@ -8,12 +8,11 @@ import subprocess
 import tkinter as tk
 import customtkinter as ctk
 import PIL.Image, PIL.ImageTk
-import logging
+from pygrabber.dshow_graph import FilterGraph
 
 from src.config import *
 from src.audio_capture import AudioRecorder
-from src.video_capture import VideoRecorder
-from src.goject import Goject
+from src.video_capture import VideoRecorder, CaptureFeedback
 from src.widgets import Spinbox, GojectCheckbox, ScrollableFrame
 from src.toplevelwindows import GojectEditWindow, GojectSelectWindow, ProcessDataWindow
 from src.managers import FileManager, SettingsManager
@@ -60,6 +59,7 @@ class Application(ctk.CTk):
         self.center_frame = ctk.CTkFrame(self, width=140, corner_radius=0,fg_color="transparent")
         self.center_frame.grid(row=0, column=1, rowspan=4)
         self.center_frame.grid_rowconfigure(5, weight=1)
+        
         # Load an image using OpenCV
         self.cv_img = cv.cvtColor(cv.imread("./utils/bg.jpg"), cv.COLOR_BGR2RGB)
         # Get the image dimensions (OpenCV stores image data as NumPy ndarray)
@@ -68,11 +68,11 @@ class Application(ctk.CTk):
         self.canvas = tk.Canvas(self.center_frame, width = width, height = height, bd=0, highlightthickness=0, relief='ridge', bg="black")
         self.canvas.grid(row=0, column=0)
         # Use PIL (Pillow) to convert the NumPy ndarray to a PhotoImage
-        self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.cv_img))
+        #self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.cv_img))
         # Add a PhotoImage to the Canvas
         #self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
-        # Button that lets the user blur the image
-        self.record_button=ctk.CTkButton(self.center_frame, text="Record", state="disabled", fg_color="blue")
+        
+        self.record_button=ctk.CTkButton(self.center_frame, text="Select Log Type", state="disabled", fg_color="blue")
         self.record_button.grid(row=1, padx=20, pady=10)
 
         self.video_progressbar = ctk.CTkProgressBar(self.center_frame, progress_color = "blue", width=600)
@@ -99,20 +99,27 @@ class Application(ctk.CTk):
         #Process Data Button
         self.process_data_button = ctk.CTkButton(self.left_sidebar_frame, command=self.draw_process_data_window, text="Process Data", state="disabled")
         self.process_data_button.grid(row=4, column=0, padx=20, pady=10)
+        #get the available video devices
+        self.graph = FilterGraph()
+ 
+        # fill combobox with video devices
+        self.camera_device_options = ctk.CTkOptionMenu(self.left_sidebar_frame, values=self.graph.get_input_devices(), command=self.camera_device_selection)
+        self.camera_device_options.grid(row=5, column=0, padx=20, pady=(20, 10))
+        self.camera_device_options.set("Device")
+        
         #Quick Log Duration Spinbox
-
         self.quick_log_label = ctk.CTkLabel(self.left_sidebar_frame, text="Quick Log Duration", anchor="w")
-        self.quick_log_label.grid(row=6, column=0, padx=20, pady=(10, 0))
+        self.quick_log_label.grid(row=7, column=0, padx=20, pady=(10, 0))
 
         self.quick_log_spinbox = Spinbox(self.left_sidebar_frame, width=120, min_value=DEFAULT_MIN_QUICKLOG_TIME, max_value=DEFAULT_MAX_QUICKLOG_TIME)
-        self.quick_log_spinbox.grid(row=7, column=0, padx=20, pady=(10, 10))
+        self.quick_log_spinbox.grid(row=8, column=0, padx=20, pady=(10, 10))
 
         #Long Log Duration Spinbox
         self.long_log_label = ctk.CTkLabel(self.left_sidebar_frame, text="Long Log Duration", anchor="w")
-        self.long_log_label.grid(row=8, column=0, padx=20, pady=(10, 0))
+        self.long_log_label.grid(row=9, column=0, padx=20, pady=(10, 0))
 
         self.long_log_spinbox = Spinbox(self.left_sidebar_frame, step_size=15, width=120, min_value=DEFAULT_MIN_LONGLOG_TIME, max_value=DEFAULT_MAX_LONGLOG_TIME)
-        self.long_log_spinbox.grid(row=9, column=0, padx=20, pady=(10, 10))
+        self.long_log_spinbox.grid(row=10, column=0, padx=20, pady=(10, 10))
     
     def draw_gojects_selection_window(self, record_type: str):
         self.gojects_selection_window = GojectSelectWindow(main_window=self, record_type=record_type)
@@ -131,6 +138,45 @@ class Application(ctk.CTk):
         self.update()
         return selected_gojects_widgets
     
+    def camera_device_selection(self, _):
+        print("trying to open camera: " + self.camera_device_options.get())   
+
+        for i, device in enumerate(self.graph.get_input_devices() ):   
+            if device == self.camera_device_options.get():
+                self.video_source = i
+
+        # main window
+        self.vid = CaptureFeedback(self.video_source)
+
+        # Create a canvas that can fit the above video source size
+        self.canvas.grid_remove()
+        self.canvas = tk.Canvas(self.center_frame, width = self.vid.width, height = self.vid.height, bd=0, highlightthickness=0, relief='ridge', bg="black")
+        self.canvas.grid(row=0, column=0)
+
+        self.delay = 15
+        self.update_caputre()
+
+    def update_caputre(self):
+        # Get a frame from the video source
+        return_value, frame = self.vid.get_frame()        
+
+        if return_value:
+            try:
+                #frame = self.analyzeFrame(frame) <-- this is where you would put your image processing code, see webcam_qr.py
+                self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
+                self.canvas.create_image(0, 0, image = self.photo, anchor = tk.NW)
+
+            except BaseException:
+                    import sys
+                    print(sys.exc_info()[0])
+                    import traceback
+                    print(traceback.format_exc())                
+            finally:
+                pass    
+
+        self.after(self.delay, self.update_caputre)
+
+
     def start_quick_log(self, selected_gojects):
         current_goject_checkbox = self.draw_selected_gojects(selected_gojects)
         number_of_gojects = len(current_goject_checkbox)
@@ -160,13 +206,7 @@ class Application(ctk.CTk):
             self.update()
 
         #Updating and Cleaning UI 
-        self.record_button.configure(text="Done!", fg_color="green")
-        self.update()
-        time.sleep(WAIT_TO_CLEAN_TIME)
-        self.video_progressbar.set(0)
-        for checkbox in current_goject_checkbox:
-            checkbox.delete()
-        self.record_button.configure(text="Record", fg_color="blue")
+        self.clean_update_window(current_goject_checkbox)
         
     def start_long_log(self, selected_gojects):
         current_goject_checkbox = self.draw_selected_gojects(selected_gojects)
@@ -197,14 +237,17 @@ class Application(ctk.CTk):
             self.update()
         
         #Updating and Cleaning UI
+        self.clean_update_window(current_goject_checkbox)
+    
+    def clean_update_window(self, checkboxes):
         self.record_button.configure(text="Done!", fg_color="green")
         self.update()
         time.sleep(WAIT_TO_CLEAN_TIME)
         self.video_progressbar.set(0)
-        for checkbox in current_goject_checkbox:
+        for checkbox in checkboxes:
             checkbox.delete()
-        self.record_button.configure(text="Record", fg_color="blue")
-    
+        self.record_button.configure(text="Select Log Type", fg_color="blue")
+
     def record_and_save(self, duration, type_recording="Undefined", folder_name="Type-Untitled", file_name=datetime.today().strftime('%Y-%m-%d_%H-%M-%S')):
         self.__save_dir = self.__file_manager.file_manager(type_recording,folder_name)
         
@@ -217,7 +260,7 @@ class Application(ctk.CTk):
     def start_AVrecording(self):
         global video_thread
         global audio_thread
-        video_thread = VideoRecorder()
+        video_thread = VideoRecorder(camindex=self.video_source)
         audio_thread = AudioRecorder()
         
         audio_thread.audio_filename = self.__save_dir + "temp_audio.wav"

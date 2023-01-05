@@ -4,6 +4,34 @@ import threading
 import time
 import tkinter as tk
 
+class CaptureFeedback:
+    def __init__(self, video_source=0):
+        # Open the video source
+        self.vid = cv2.VideoCapture(video_source)
+        if not self.vid.isOpened():
+            raise ValueError("Unable to open video source", video_source)
+
+        # Get video source width and height
+        self.width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self.height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
+    def get_frame(self):
+        if not self.vid.isOpened():
+            return (return_value, None)
+
+        return_value, frame = self.vid.read()
+        if return_value:
+            # Return a boolean success flag and the current frame converted to BGR
+            return (return_value, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        else:
+            return (return_value, None)
+
+    # Release the video source when the object is destroyed
+    def __del__(self):
+        if self.vid.isOpened():
+            self.vid.release()
+
+
 class VideoRecorder():
     "Video class based on openCV"
     def __init__(self, name="./data/temp_video.avi", fourcc="MJPG", sizex=640, sizey=480, camindex=0, fps=30):
@@ -14,6 +42,10 @@ class VideoRecorder():
         self.__frameSize = (sizex, sizey) # video formats and sizes also depend and vary according to the camera used
         self.__video_filename = name
         self.__video_cap = cv2.VideoCapture(self.__device_index, cv2.CAP_DSHOW)
+        #if not self.__video_cap.isOpened():
+        #    raise ValueError("Unable to open video source", self.__device_index)
+        self.__width = self.__video_cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self.__height = self.__video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         self.__video_writer = cv2.VideoWriter_fourcc(*self.__fourcc)
         self.frame_counts = 1
 
