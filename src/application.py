@@ -146,12 +146,12 @@ class Application(ctk.CTk):
                 self.video_source = i
 
         # main window
-        self.vid = CaptureFeedback(self.video_source)
+        #self.vid = CaptureFeedback(self.video_source)
 
         # Create a canvas that can fit the above video source size
-        self.canvas.grid_remove()
-        self.canvas = tk.Canvas(self.center_frame, width = self.vid.width, height = self.vid.height, bd=0, highlightthickness=0, relief='ridge', bg="black")
-        self.canvas.grid(row=0, column=0)
+        #self.canvas.grid_remove()
+        #self.canvas = tk.Canvas(self.center_frame, width = self.vid.width, height = self.vid.height, bd=0, highlightthickness=0, relief='ridge', bg="black")
+        #self.canvas.grid(row=0, column=0)
 
         self.long_log_button.configure(state="normal")
         self.quicklog_button.configure(state="normal")
@@ -159,7 +159,7 @@ class Application(ctk.CTk):
 
 
         self.delay = 15
-        self.update_caputre()
+        #self.update_caputre()
 
     def update_caputre(self):
         # Get a frame from the video source
