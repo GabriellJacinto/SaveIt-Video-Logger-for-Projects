@@ -72,7 +72,7 @@ class Application(ctk.CTk):
         # Add a PhotoImage to the Canvas
         #self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
         
-        self.record_button=ctk.CTkButton(self.center_frame, text="Select Log Type", state="disabled", fg_color="blue")
+        self.record_button=ctk.CTkButton(self.center_frame, text="Choose a camera device", state="disabled", fg_color="transparent")
         self.record_button.grid(row=1, padx=20, pady=10)
 
         self.video_progressbar = ctk.CTkProgressBar(self.center_frame, progress_color = "blue", width=600)
@@ -88,10 +88,10 @@ class Application(ctk.CTk):
         self.title_label = ctk.CTkLabel(self.left_sidebar_frame, text="Personal Video Logger", font=ctk.CTkFont(size=20, weight="bold"))
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         #Quick Log Button
-        self.quicklog_button = ctk.CTkButton(self.left_sidebar_frame, command=lambda:self.draw_gojects_selection_window("quick_log"), text = "Quick Log")
+        self.quicklog_button = ctk.CTkButton(self.left_sidebar_frame, command=lambda:self.draw_gojects_selection_window("quick_log"), text = "Quick Log", state="disabled")
         self.quicklog_button.grid(row=1, column=0, padx=20, pady=10)
         #Long Log Button
-        self.long_log_button = ctk.CTkButton(self.left_sidebar_frame, command=lambda:self.draw_gojects_selection_window("long_log"), text="Long Log")
+        self.long_log_button = ctk.CTkButton(self.left_sidebar_frame, command=lambda:self.draw_gojects_selection_window("long_log"), text="Long Log", state="disabled")
         self.long_log_button.grid(row=2, column=0, padx=20, pady=10)
         #Config Gojects Button
         self.config_gojects_button = ctk.CTkButton(self.left_sidebar_frame, command=self.draw_gojects_edit_window, text = "Gojects Configuration")
@@ -152,6 +152,11 @@ class Application(ctk.CTk):
         self.canvas.grid_remove()
         self.canvas = tk.Canvas(self.center_frame, width = self.vid.width, height = self.vid.height, bd=0, highlightthickness=0, relief='ridge', bg="black")
         self.canvas.grid(row=0, column=0)
+
+        self.long_log_button.configure(state="normal")
+        self.quicklog_button.configure(state="normal")
+        self.record_button.configure(text="Select Log Type", fg_color="blue")
+
 
         self.delay = 15
         self.update_caputre()
