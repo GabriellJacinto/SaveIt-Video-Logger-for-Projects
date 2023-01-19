@@ -26,7 +26,7 @@ Before downloading, certify that you have the following requirements:
 To run SaveIt: Personal Video Logger, run the following commands:
 
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 Lauching the application:
