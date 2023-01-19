@@ -19,7 +19,7 @@ Automation for video logging progress and reflexions about goals, projects, and 
 
 Before downloading, certify that you have the following requirements:
 * You have the most recent version of `python`
-* Your operating system is `Windows / Linux` based.
+* Your operating system is `Windows` based. (Pygrabber uses COMTypes, which is designed for Windows, not Linux)
 
 ## 🚀 Installing SaveIt: Personal Video Logger
 
