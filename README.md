@@ -38,7 +38,7 @@ python3 main.py
 
 This software is on realese 1.2. The current version is capable of:
 
-<details open>
+<details>
 <summary>Version 1.1.* Features</summary>
 
 - [x] Execution by command line (see [Installation](#🚀-Installing-SaveIt:-Personal-Video-Logger))
@@ -60,7 +60,7 @@ This software is on realese 1.2. The current version is capable of:
 
 </details>
 
-<details>
+<details open>
 <summary>Version 1.2.* Features</summary>
 
 - [ ] Execution by executable
