@@ -1,6 +1,9 @@
 APP_COLOR_THEME = "dark"
 APP_WIDGETS_COLORS = "dark-blue"
 
+QL_MESSAGE = "Quick Logs: 1. What did you learn? 2. How do you feel? 3. What's are you going to do from now on?"
+LL_MESSAGE = "Long Logs: 1. What has the strategy been? 2. What has been achieved? 3. Did you follow the last advice?"
+
 MAIN_WINDOW_NAME = "SaveIt: Personal Video Logger"
 MAIN_WINDOW_HEIGHT = 620
 MAIN_WINDOW_WIDTH = 1200

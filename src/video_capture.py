@@ -2,6 +2,7 @@ from __future__ import print_function, division
 import cv2
 import threading
 import time
+from datetime import datetime
 import tkinter as tk
 
 class CaptureFeedback:
@@ -64,16 +65,21 @@ class VideoRecorder():
         timer_start = time.time()
         timer_current = 0
         self.start_time = time.time()
+        time_label = datetime.now()
         while self.__open:
             ret, video_frame = self.__video_cap.read()
             if ret:
+                time_text = datetime.now() - time_label
+                font = cv2.FONT_HERSHEY_PLAIN
+                gray = cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY)
+                cv2.putText(video_frame, str(datetime.now()), (20,40), font, 2, (255,255,255), 2, cv2.LINE_AA) 
                 self.__video_out.write(video_frame)
                 # print(str(counter) + " " + str(self.frame_counts) + " frames written " + str(timer_current))
                 self.frame_counts += 1
                 # counter += 1
                 # timer_current = time.time() - timer_start
                 time.sleep(1/self.__fps)
-                gray = cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY)
+                cv2.putText(gray, str(time_text), (20,40), font, 2, (255,255,255), 2, cv2.LINE_AA) 
                 cv2.imshow('recording...', gray)
                 cv2.waitKey(1)
             else:

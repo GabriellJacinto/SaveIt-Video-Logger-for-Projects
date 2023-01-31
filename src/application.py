@@ -57,26 +57,31 @@ class Application(ctk.CTk):
             
     def draw_center_frame(self):
         self.center_frame = ctk.CTkFrame(self, width=140, corner_radius=0,fg_color="transparent")
-        self.center_frame.grid(row=0, column=1, rowspan=4)
+        self.center_frame.grid(row=0, column=1, rowspan=6)
         self.center_frame.grid_rowconfigure(5, weight=1)
         
+        label1 = ctk.CTkLabel(self.center_frame, text=LL_MESSAGE, font=ctk.CTkFont(size=12, slant="roman"), text_color="gray")
+        label2 = ctk.CTkLabel(self.center_frame, text=QL_MESSAGE, font=ctk.CTkFont(size=12, slant="roman"), text_color="gray")
+        label1.grid(row=1, pady=(0,60), sticky="N")
+        label2.grid(row=0, sticky="N")
+
         # Load an image using OpenCV
         self.cv_img = cv.cvtColor(cv.imread("./utils/bg.jpg"), cv.COLOR_BGR2RGB)
         # Get the image dimensions (OpenCV stores image data as NumPy ndarray)
         height, width, no_channels = self.cv_img.shape
         # Create a canvas that can fit the above image
         self.canvas = tk.Canvas(self.center_frame, width = width, height = height, bd=0, highlightthickness=0, relief='ridge', bg="black")
-        self.canvas.grid(row=0, column=0)
+        self.canvas.grid(row=2, pady=(0,80), column=0)
         # Use PIL (Pillow) to convert the NumPy ndarray to a PhotoImage
         #self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.cv_img))
         # Add a PhotoImage to the Canvas
         #self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
         
         self.record_button=ctk.CTkButton(self.center_frame, text="Choose a camera device", state="disabled", fg_color="transparent")
-        self.record_button.grid(row=1, padx=20, pady=10)
+        self.record_button.grid(row=3, padx=20, pady=10)
 
         self.video_progressbar = ctk.CTkProgressBar(self.center_frame, progress_color = "blue", width=600)
-        self.video_progressbar.grid(row=2, padx=20, pady=10)
+        self.video_progressbar.grid(row=4, padx=20, pady=10)
         self.video_progressbar.set(0)
         
     def draw_left_frame(self):
@@ -200,7 +205,8 @@ class Application(ctk.CTk):
             checkbox.set_checkbox_value()
             
             #Recording
-            name = "{}-{}".format(checkbox.status, datetime.today().strftime('%Y-%m-%d_%H-%M-%S'))
+            clean_status = checkbox.status.replace(" ", "_")
+            name = "{}-{}".format(clean_status, datetime.today().strftime('%Y-%m-%d_%H-%M-%S'))
             folder = checkbox.name.replace(" ", "_")
             self.record_and_save(timer, type_recording="Quick_Logs", folder_name=folder, file_name=name)
             
@@ -231,7 +237,8 @@ class Application(ctk.CTk):
             checkbox.set_checkbox_value()
             
             #Recording
-            name = "{}-{}".format(checkbox.status, datetime.today().strftime('%Y-%m-%d_%H-%M-%S'))
+            clean_status = checkbox.status.replace(" ", "_")
+            name = "{}-{}".format(clean_status, datetime.today().strftime('%Y-%m-%d_%H-%M-%S'))
             folder = checkbox.name.replace(" ", "_")
             self.record_and_save(timer, type_recording="Long_Logs", folder_name=folder, file_name=name)
             
