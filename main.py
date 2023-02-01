@@ -1,4 +1,8 @@
 from src.application import Application
+from codecarbon import EmissionsTracker
+
+#tracker = EmissionsTracker()
+#tracker.start()
 
 if __name__ == "__main__":
     app = Application()
@@ -70,3 +74,5 @@ else:
 
     # Example usage:
     merge_video_audio("recording.avi", "recording.wav", "recording_with_audio.mp4")
+
+#tracker.stop()
