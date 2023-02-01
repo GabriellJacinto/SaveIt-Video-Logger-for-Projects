@@ -64,6 +64,9 @@ This software is on realese 1.2. The current version is capable of:
 <summary>Version 1.2.* Features</summary>
 
 - [ ] Execution by executable
+- [ ] Notion API integration:
+  - [ ] Basic report of completed tasks (show name and its project/goal)
+  - [ ] Automatic selection upon clicking quicklog (longlog will remain as manual selection)
 - [ ] Code optimization:
   - [ ] CRUD functions optimizations of GojectEditWindow class
   - [ ] Reimplementation of top level windows and Gojects widgets with inheretance and abstract classes
@@ -71,9 +74,10 @@ This software is on realese 1.2. The current version is capable of:
   - [ ] Add attribute of parent/child goject
   - [ ] Create visual representation of parent/child goject (as a pathway visualizer)
 - [ ] Video Player:
+  - [ ] Show option to watch/listen to the last quicklog or longlog recorded
   - [ ] Integration with [mindfulness at the computer](https://gitlab.com/mindfulness-at-the-computer/mindfulness-at-the-computer) to play animations
 - [ ] Recording:
-  - [ ] Add Recording info on the screen while recording and on the saved file
+  - [x]  Add Recording info on the screen while recording and on the saved file
   - [ ] Select devices on the main page
     - [x] Camera
     - [ ] Microphone 
