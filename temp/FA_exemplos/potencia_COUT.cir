@@ -1,0 +1,16 @@
+*****MEDIDAS DE POTENCIA
+	.measure tran potencia_media_vccin avg p(Vvccin) 		from = 0n to=72n
+	.measure tran potencia_media_vcc avg p(Vvcc) 			from = 0n to=72n
+	.measure tran potencia_media_vccbloco avg p(Vvccbloco) 	from = 0n to=72n
+	.measure tran potencia_media_vccout avg p(Vvccout) 		from = 0n to=72n
+
+	.measure tran potencia_max_vccin max p(Vvccin) 			from = 0n to=72n
+	.measure tran potencia_max_vcc max p(Vvcc) 				from = 0n to=72n
+	.measure tran potencia_max_vccbloco max p(Vvccbloco) 	from = 0n to=72n
+	.measure tran potencia_max_vccout max p(Vvccout) 		from = 0n to=72n
+
+	.measure tran potencia_min_vccin min p(Vvccin) 			from = 0n to=72n
+	.measure tran potencia_min_vcc min p(Vvcc) 				from = 0n to=72n
+	.measure tran potencia_min_vccbloco min p(Vvccbloco) 	from = 0n to=72n
+	.measure tran potencia_min_vccout min p(Vvccout) 		from = 0n to=72n
+******

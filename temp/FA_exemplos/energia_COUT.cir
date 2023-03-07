@@ -1,0 +1,6 @@
+*****Medidas de energia---
+	.measure tran Iint_Vvccin INTEG i(Vvccin) 			from=0n to=72n
+	.measure tran Iint_Vvcc INTEG i(Vvcc)				from=0n to=72n
+	.measure tran Iint_Vvccbloco INTEG i(Vvccbloco) 	from=0n to=72n
+	.measure tran Iint_Vvccout INTEG i(Vvccout) 		from=0n to=72n
+*****
