@@ -1,5 +1,0 @@
-*****ONDAS
-	Va a gnd pwl(0n 0 12n 0 12.01n supply 24n supply 24.01n 0 28n 0 28.01n supply 32n supply 32.01n 0 40n 0 40.01n supply 44n supply 44.01n 0 50n 0 50.01n supply 58n supply 58.01n 0 72n 0)
-	Vb b gnd pwl(0n supply 12n supply 12.01n 0 24n 0 24.01n supply 34n supply 34.01n 0 52n 0 52.01n supply 56n supply 56.01n 0 64n 0 64.01n supply 68n supply 68.01n 0 72n 0)
-	Vcin cin gnd pwl(0n 0 4n 0 4.01n supply 8n supply 8.01n 0 16n 0 16.01n supply 20n supply 20.01n 0 36n 0 36.01n supply 46n supply 46.01n 0 62n 0 62.01n supply 72n supply)
-*****
