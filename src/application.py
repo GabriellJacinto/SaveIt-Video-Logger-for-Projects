@@ -15,7 +15,7 @@ from src.audio_capture import AudioRecorder
 from src.video_capture import VideoRecorder, CaptureFeedback
 from src.widgets import Spinbox, GojectCheckbox, ScrollableFrame
 from src.toplevelwindows import GojectEditWindow, GojectSelectWindow, ProcessDataWindow
-from src.managers import FileManager, SettingsManager
+from src.app_managers import FileManager, SettingsManager
 
 ctk.set_appearance_mode(APP_COLOR_THEME)
 ctk.set_default_color_theme(APP_WIDGETS_COLORS)
