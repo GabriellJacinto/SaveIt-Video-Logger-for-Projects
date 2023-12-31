@@ -12,7 +12,7 @@ import pyaudio
 
 class AudioRecorder:
     "Audio class based on pyAudio and Wave"
-    def __init__(self, filename='output.wav', channels=1, rate=44100, frames_per_buffer=1024, format=pyaudio.paInt16):
+    def __init__(self, filename='temp_audio.wav', channels=1, rate=44100, frames_per_buffer=1024, format=pyaudio.paInt16):
         self.__audio_filename = filename
         self.__channels = channels
         self.__rate = rate

@@ -42,7 +42,7 @@ class VideoRecorder():
         self.__fourcc = fourcc            # capture images (with no decrease in speed over time; testing is required)
         self.__frameSize = (sizex, sizey) # video formats and sizes also depend and vary according to the camera used
         self.__video_filename = name
-        self.__video_cap = cv2.VideoCapture(self.__device_index, cv2.CAP_DSHOW)
+        self.__video_cap = cv2.VideoCapture(self.__device_index) # cv2.CAP_DSHOW -> this is windows only
         #if not self.__video_cap.isOpened():
         #    raise ValueError("Unable to open video source", self.__device_index)
         self.__width = self.__video_cap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -105,8 +105,10 @@ class VideoRecorder():
         "Launches the video recording function using a thread"
         video_thread = threading.Thread(target=self.record)
         video_thread.start()
+        #time.sleep(15)
+        #self.stop()
+        #video_thread.join()
 
 if __name__ == '__main__':
-    global video_thread
-    video_thread = VideoRecorder()
-    video_thread()
+    recorder = VideoRecorder()
+    recorder()

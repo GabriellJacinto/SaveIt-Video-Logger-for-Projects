@@ -233,7 +233,7 @@ class Application(ctk.CTk):
         self.record_button.configure(text="Recording for {} s...".format(timer*number_of_gojects), fg_color="red")
         self.update()
 
-        #TO DO: when done selecting, show prelude for 15s (video)
+        #TODO: when done selecting, show prelude for 15s (video)
         for checkbox in current_goject_checkbox:
             
             #Updating UI
