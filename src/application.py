@@ -8,7 +8,7 @@ import subprocess
 import tkinter as tk
 import customtkinter as ctk
 import PIL.Image, PIL.ImageTk
-from pygrabber.dshow_graph import FilterGraph
+#from pygrabber.dshow_graph import FilterGraph
 
 from src.config import *
 from src.audio_capture import AudioRecorder
@@ -105,12 +105,16 @@ class Application(ctk.CTk):
         self.process_data_button = ctk.CTkButton(self.left_sidebar_frame, command=self.draw_process_data_window, text="Process Data", state="disabled")
         self.process_data_button.grid(row=4, column=0, padx=20, pady=10)
         #get the available video devices
-        self.graph = FilterGraph()
+        #self.graph = FilterGraph()
  
         # fill combobox with video devices
-        self.camera_device_options = ctk.CTkOptionMenu(self.left_sidebar_frame, values=self.graph.get_input_devices(), command=self.camera_device_selection)
-        self.camera_device_options.grid(row=5, column=0, padx=20, pady=(20, 10))
-        self.camera_device_options.set("Device")
+        #self.camera_device_options = ctk.CTkOptionMenu(self.left_sidebar_frame, values=self.graph.get_input_devices(), command=self.camera_device_selection)
+        #self.camera_device_options.grid(row=5, column=0, padx=20, pady=(20, 10))
+        #self.camera_device_options.set("Device")
+        self.long_log_button.configure(state="normal")
+        self.quicklog_button.configure(state="normal")
+        #self.record_button.configure(text="Select Log Type", fg_color="blue")
+        self.delay = 15
         
         #Quick Log Duration Spinbox
         self.quick_log_label = ctk.CTkLabel(self.left_sidebar_frame, text="Quick Log Duration", anchor="w")
@@ -144,11 +148,11 @@ class Application(ctk.CTk):
         return selected_gojects_widgets
     
     def camera_device_selection(self, _):
-        print("trying to open camera: " + self.camera_device_options.get())   
+        #print("trying to open camera: " + self.camera_device_options.get())   
 
-        for i, device in enumerate(self.graph.get_input_devices() ):   
-            if device == self.camera_device_options.get():
-                self.video_source = i
+        #for i, device in enumerate(self.graph.get_input_devices() ):   
+        #    if device == self.camera_device_options.get():
+        #        self.video_source = i
 
         # main window
         #self.vid = CaptureFeedback(self.video_source)
@@ -272,16 +276,17 @@ class Application(ctk.CTk):
     def start_AVrecording(self):
         global video_thread
         global audio_thread
-        video_thread = VideoRecorder(camindex=self.video_source)
+        video_thread = VideoRecorder(camindex=0) # self.video_source)
         audio_thread = AudioRecorder()
         
         audio_thread.audio_filename = self.__save_dir + "temp_audio.wav"
         video_thread.video_filename = self.__save_dir + "temp_video.avi"
 
-        audio_thread.start()
-        video_thread.start()
+        audio_thread()
+        video_thread()
 
     def stop_AVrecording(self,save_dir, filename="test"):
+        #acho que preciso dar um join nas threads que são criadas nas classes video_thread e audio_thread
         audio_thread.stop()
         frame_counts = video_thread.frame_counts
         elapsed_time = time.time() - video_thread.start_time

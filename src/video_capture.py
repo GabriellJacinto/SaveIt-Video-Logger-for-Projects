@@ -101,7 +101,7 @@ class VideoRecorder():
             cv2.waitKey(1)
             print("Processing...")
 
-    def start(self):
+    def __call__(self):
         "Launches the video recording function using a thread"
         video_thread = threading.Thread(target=self.record)
         video_thread.start()
@@ -109,4 +109,4 @@ class VideoRecorder():
 if __name__ == '__main__':
     global video_thread
     video_thread = VideoRecorder()
-    video_thread.start()
+    video_thread()

@@ -3,3 +3,4 @@ data/
 CustomTkinter/
 *.avi
 .codecarbon.config
+venv/
